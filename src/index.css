@@ -1,8 +1,8 @@
+@import "./components/ui/line-clamp.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import './components/ui/line-clamp.css';
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
@@ -128,5 +128,6 @@ All colors MUST be HSL.
 
 /* Smooth animations */
 * {
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease,
+    border-color 0.2s ease, box-shadow 0.2s ease;
 }
