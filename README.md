@@ -1,5 +1,49 @@
 <div align="center">
 
+# 📚 SaveIT - Your Pers### 🎬 Demo
+
+🌐 **Live Demo**: [SaveIT App](https://save-it-pink.vercel.app/)
+
+_Experience the full functionality with the live demo!_
+
+<div align="center">
+<img width="80%- 📖 Read the documentation
+
+<div align="center">
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=footer&animation=fadeIn"/>
+</div>
+
+---
+
+<div align="center">
+
+### 💖 Made with Love by [Anuj](https://github.com/yourusername)
+
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
+
+_Building tools that make developers' lives easier, one commit at a time._
+
+<br>
+
+<img src="https://skillicons.dev/icons?i=react,typescript,nodejs,vscode&theme=light" alt="Technologies I Love" />
+
+</div>//capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>Knowledge Hub
+
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/bookmark.svg" width="100" height="100" alt="SaveIT Logo">
+
+_Save, organize, and access your digital knowledge effortlessly_
+
+[![Demo](https://img.shields.io/badge/Demo-Live%20Site-green)](https://save-it-pink.vercel.app/)
+[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red)](#)
+[![React](https://img.shields.io/badge/React-18.3.1-blue)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com/)
+
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&animation=fadeIn"/>
+
+</div>ter">
+
 # 📚 SaveIT - Your Personal Knowledge Hub
 
 <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/bookmark.svg" width="100" height="100" alt="SaveIT Logo">
@@ -39,12 +83,20 @@ _Experience the full functionality with the live demo!_
 
 <div align="center">
 
-| Frontend   | Backend            | Database           | Auth  | Styling      |
-| ---------- | ------------------ | ------------------ | ----- | ------------ |
-| React 18   | Supabase           | PostgreSQL         | Clerk | Tailwind CSS |
-| TypeScript | Supabase Functions | Row Level Security | JWT   | shadcn/ui    |
-| Vite       | Edge Functions     | Real-time          | OAuth | Lucide Icons |
+<img src="https://skillicons.dev/icons?i=react,typescript,vite,tailwind,supabase,nodejs&theme=light" alt="Tech Stack" />
 
+<br><br>
+
+| Frontend                                                                     | Backend                                                                  | Database                                                                     | Auth                                                                                                    | Styling                                                                                                           |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| <img src="https://skillicons.dev/icons?i=react" width="40"/> React 18        | <img src="https://skillicons.dev/icons?i=supabase" width="40"/> Supabase | <img src="https://skillicons.dev/icons?i=postgresql" width="40"/> PostgreSQL | <img src="https://img.shields.io/badge/Clerk-6C47FF?style=flat&logo=clerk&logoColor=white" width="60"/> | <img src="https://skillicons.dev/icons?i=tailwind" width="40"/> Tailwind CSS                                      |
+| <img src="https://skillicons.dev/icons?i=typescript" width="40"/> TypeScript | Supabase Functions                                                       | Row Level Security                                                           | JWT                                                                                                     | shadcn/ui                                                                                                         |
+| <img src="https://skillicons.dev/icons?i=vite" width="40"/> Vite             | Edge Functions                                                           | Real-time                                                                    | OAuth                                                                                                   | <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/palette.svg" width="20"/> Lucide Icons |
+
+</div>
+
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
 </div>
 
 ## 🚀 Quick Start
@@ -94,6 +146,10 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
+
 ## 📖 Usage
 
 ### Saving Content
@@ -111,7 +167,15 @@ For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 - **✏️ Edit**: Update your saved content anytime
 - **🗑️ Delete**: Remove items you no longer need
 
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
+
 ## 🎨 Features Showcase
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sparkles.svg" width="50" height="50" alt="Features">
+</div>
 
 ### Categories & Organization
 
@@ -127,7 +191,15 @@ For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 - Clean domain display
 - Link validation
 
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
+
 ## 🤝 Contributing
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/users.svg" width="50" height="50" alt="Contributing">
+</div>
 
 We welcome contributions! Here's how you can help:
 
@@ -137,11 +209,23 @@ We welcome contributions! Here's how you can help:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
+
 ## 🙏 Acknowledgments
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart-handshake.svg" width="50" height="50" alt="Acknowledgments">
+</div>
 
 - [React](https://reactjs.org/) - The web framework used
 - [Supabase](https://supabase.com/) - Backend and database
@@ -149,6 +233,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
 - [Lucide Icons](https://lucide.dev/) - Beautiful icons
+
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
 
 ## 📞 Support
 
