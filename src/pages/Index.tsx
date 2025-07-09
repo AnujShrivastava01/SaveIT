@@ -40,7 +40,7 @@ import SignInPage from "@/components/SignInPage";
 import Preloader from "@/components/Preloader";
 import { SavedItem } from "@/utils/supabase";
 
-const categories = [
+const defaultCategories = [
   { name: "Coding", icon: Code, color: "bg-blue-500" },
   { name: "Study", icon: BookOpen, color: "bg-green-500" },
   { name: "Personal", icon: Heart, color: "bg-pink-500" },
@@ -61,6 +61,9 @@ const Index = () => {
     category: "Coding",
     type: "link" as "link" | "text",
   });
+  const [categories, setCategories] = useState(defaultCategories);
+  const [showAddFolder, setShowAddFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
 
   // Update filtered items when items change
@@ -287,7 +290,7 @@ const Index = () => {
                       className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 w-full min-w-0"
                     />
                   </div>
-                  <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                  <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
                     <Button
                       variant={
                         selectedCategory === "all" ? "default" : "outline"
@@ -318,6 +321,40 @@ const Index = () => {
                         {category.name}
                       </Button>
                     ))}
+                    <Dialog open={showAddFolder} onOpenChange={setShowAddFolder}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setShowAddFolder(true)}>
+                          + Add Folder
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                        <DialogHeader>
+                          <DialogTitle>Add New Folder</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <Input
+                            placeholder="Folder name"
+                            value={newFolderName}
+                            onChange={e => setNewFolderName(e.target.value)}
+                            className="bg-slate-700 border-slate-600"
+                          />
+                          <div className="flex justify-end space-x-2">
+                            <Button variant="outline" onClick={() => setShowAddFolder(false)} className="border-slate-600 text-slate-300">Cancel</Button>
+                            <Button
+                              onClick={() => {
+                                if (newFolderName.trim() && !categories.some(cat => cat.name.toLowerCase() === newFolderName.trim().toLowerCase())) {
+                                  setCategories([...categories, { name: newFolderName.trim(), icon: Folder, color: "bg-gray-500" }]);
+                                  setNewFolderName("");
+                                  setShowAddFolder(false);
+                                }
+                              }}
+                              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                              Add
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </div>
