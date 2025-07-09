@@ -212,24 +212,19 @@ If you encounter any issues or have questions:
 
 <div align="center">
 
-### 💖 Made with Love by [Anuj](https://github.com/yourusername)
+### Made with 💖 by [Anuj](https://github.com/yourusername)
 
-<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
 
----
 
 <div align="center">
 
-### 💖 Made with Love by [Anuj Shrivastava](https://www.linkedin.com/in/anujshrivastava1/)
-
-<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
 
 _Building tools that make developers' lives easier, one commit at a time._
 
 <br>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/anujshrivastava1/)
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yourusername)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Anujshrivastava01)
 
 <br>
 
