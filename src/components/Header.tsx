@@ -4,6 +4,9 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-reac
 import { Button } from "@/components/ui/button";
 
 const Header = () => {
+  console.log('Header component rendering...');
+  const isClerkConfigured = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  
   return (
     <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
       <div className="container mx-auto px-4 py-6">
@@ -19,16 +22,24 @@ const Header = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <SignedOut>
-              <SignInButton>
-                <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                  Sign In
-                </Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
+            {isClerkConfigured ? (
+              <>
+                <SignedOut>
+                  <SignInButton>
+                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                      Sign In
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </>
+            ) : (
+              <Button disabled className="bg-gray-500 cursor-not-allowed">
+                Auth Disabled
+              </Button>
+            )}
           </div>
         </div>
       </div>
