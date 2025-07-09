@@ -47,6 +47,8 @@ const defaultCategories = [
   { name: "Work", icon: Folder, color: "bg-orange-500" },
 ];
 
+const CATEGORIES_KEY = "saveit_categories";
+
 const Index = () => {
   const { items, loading, addItem, deleteItem, togglePin } = useDatabase();
   const [filteredItems, setFilteredItems] = useState<SavedItem[]>([]);
@@ -61,10 +63,34 @@ const Index = () => {
     category: "Coding",
     type: "link" as "link" | "text",
   });
-  const [categories, setCategories] = useState(defaultCategories);
+  const [categories, setCategories] = useState(() => {
+    const stored = localStorage.getItem(CATEGORIES_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        // Restore icon functions
+        return parsed.map((cat: any) => {
+          let icon = Folder;
+          if (cat.icon && typeof cat.icon === "string") {
+            if (cat.icon === "Code") icon = Code;
+            else if (cat.icon === "BookOpen") icon = BookOpen;
+            else if (cat.icon === "Heart") icon = Heart;
+            else if (cat.icon === "Folder") icon = Folder;
+          } else if (cat.icon) {
+            icon = cat.icon;
+          }
+          return { ...cat, icon };
+        });
+      } catch {
+        return defaultCategories;
+      }
+    }
+    return defaultCategories;
+  });
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
+  const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
 
   // Update filtered items when items change
   useEffect(() => {
@@ -88,6 +114,16 @@ const Index = () => {
 
     setFilteredItems(filtered);
   }, [items, searchQuery, selectedCategory]);
+
+  // Persist categories to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(
+      CATEGORIES_KEY,
+      JSON.stringify(
+        categories.map(cat => ({ ...cat, icon: cat.icon.name }))
+      )
+    );
+  }, [categories]);
 
   const handleAddItem = async () => {
     if (!newItem.title || !newItem.content) {
@@ -303,24 +339,54 @@ const Index = () => {
                       }>
                       All
                     </Button>
-                    {categories.map((category) => (
-                      <Button
-                        key={category.name}
-                        variant={
-                          selectedCategory === category.name
-                            ? "default"
-                            : "outline"
-                        }
-                        onClick={() => setSelectedCategory(category.name)}
-                        className={
-                          selectedCategory === category.name
-                            ? "bg-purple-600 hover:bg-purple-700"
-                            : "border-slate-600 text-slate-300"
-                        }>
-                        <category.icon className="w-3 h-3 mr-1" />
-                        {category.name}
-                      </Button>
+                    {categories.map((category, idx) => (
+                      <div key={category.name} className="relative group inline-block">
+                        <Button
+                          variant={selectedCategory === category.name ? "default" : "outline"}
+                          onClick={() => setSelectedCategory(category.name)}
+                          className={selectedCategory === category.name ? "bg-purple-600 hover:bg-purple-700 pr-8" : "border-slate-600 text-slate-300 pr-8"}
+                        >
+                          <category.icon className="w-3 h-3 mr-1" />
+                          {category.name}
+                        </Button>
+                        {/* Show delete for every folder except 'All' */}
+                        <button
+                          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500"
+                          title={`Delete ${category.name}`}
+                          onClick={e => {
+                            e.stopPropagation();
+                            setConfirmDeleteIdx(idx);
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     ))}
+                    {/* Confirm Delete Dialog */}
+                    <Dialog open={confirmDeleteIdx !== null} onOpenChange={open => !open && setConfirmDeleteIdx(null)}>
+                      <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-xs">
+                        <DialogHeader>
+                          <DialogTitle>Delete Folder?</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-2">Are you sure you want to delete the folder <b>{confirmDeleteIdx !== null ? categories[confirmDeleteIdx]?.name : ""}</b>? This cannot be undone.</div>
+                        <div className="flex justify-end space-x-2 mt-4">
+                          <Button variant="outline" onClick={() => setConfirmDeleteIdx(null)} className="border-slate-600 text-slate-300">Cancel</Button>
+                          <Button
+                            onClick={() => {
+                              if (confirmDeleteIdx !== null) {
+                                const delName = categories[confirmDeleteIdx].name;
+                                setCategories(categories.filter((_, i) => i !== confirmDeleteIdx));
+                                if (selectedCategory === delName) setSelectedCategory("all");
+                                setConfirmDeleteIdx(null);
+                              }
+                            }}
+                            className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600">
+                            Delete
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    {/* End Confirm Delete Dialog */}
                     <Dialog open={showAddFolder} onOpenChange={setShowAddFolder}>
                       <DialogTrigger asChild>
                         <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setShowAddFolder(true)}>
