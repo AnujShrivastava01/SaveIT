@@ -10,6 +10,10 @@ import {
   Code,
   Heart,
   Folder,
+  Linkedin,
+  Github,
+  Twitter,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,9 +53,36 @@ const defaultCategories = [
 
 const CATEGORIES_KEY = "saveit_categories";
 
+// Utility function to extract domain from a URL
+function getDomain(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+// Utility function to get icon for item
+function getIconForItem(item: SavedItem) {
+  if (item.content?.includes("linkedin.com")) return <Linkedin className="w-5 h-5 text-blue-600" />;
+  if (item.content?.includes("github.com")) return <Github className="w-5 h-5 text-gray-800" />;
+  if (item.content?.includes("twitter.com")) return <Twitter className="w-5 h-5 text-blue-400" />;
+  const domain = getDomain(item.content);
+  if (domain) {
+    return (
+      <img
+        src={`https://www.google.com/s2/favicons?domain=${domain}`}
+        alt={domain}
+        className="w-5 h-5 rounded"
+        style={{ background: '#fff' }}
+      />
+    );
+  }
+  return <Globe className="w-5 h-5 text-slate-400" />;
+}
+
 const Index = () => {
-  const { items, loading, addItem, deleteItem, togglePin } = useDatabase();
-  const [filteredItems, setFilteredItems] = useState<SavedItem[]>([]);
+  const { items, loading, addItem, deleteItem, togglePin, loadItems } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -91,29 +122,9 @@ const Index = () => {
   const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
-
-  // Update filtered items when items change
-  useEffect(() => {
-    let filtered = items;
-
-    if (searchQuery) {
-      filtered = items.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.tags.some((tag) =>
-            tag.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-      );
-    }
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((item) => item.category === selectedCategory);
-    }
-
-    setFilteredItems(filtered);
-  }, [items, searchQuery, selectedCategory]);
+  const [editItem, setEditItem] = useState<SavedItem | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ title: "", content: "", description: "", tags: "", category: "Coding", type: "link" as "link" | "text" });
 
   // Persist categories to localStorage whenever they change
   useEffect(() => {
@@ -135,6 +146,9 @@ const Index = () => {
       return;
     }
 
+    console.log('Selected category when adding:', selectedCategory);
+    console.log('newItem.category when adding:', newItem.category);
+
     try {
       await addItem({
         title: newItem.title,
@@ -144,10 +158,12 @@ const Index = () => {
           .split(",")
           .map((tag) => tag.trim())
           .filter((tag) => tag !== ""),
-        category: newItem.category,
+        category: newItem.category.trim(),
         type: newItem.type,
         is_pinned: false,
       });
+
+      await loadItems(); // Refresh items after adding
 
       // Reset form
       setNewItem({
@@ -159,10 +175,69 @@ const Index = () => {
         type: "link",
       });
       setIsAddDialogOpen(false);
+      setSelectedCategory(newItem.category);
     } catch (error) {
       // Error is already handled in the hook
     }
   };
+
+  // Handle edit open
+  const openEditDialog = (item: SavedItem) => {
+    setEditItem(item);
+    setEditForm({
+      title: item.title,
+      content: item.content,
+      description: item.description || "",
+      tags: item.tags.join(", "),
+      category: item.category,
+      type: item.type,
+    });
+    setEditDialogOpen(true);
+  };
+
+  // Handle edit save
+  const handleEditSave = () => {
+    if (!editItem) return;
+    // Update in items (simulate DB update)
+    const updated = items.map((item) =>
+      item.id === editItem.id
+        ? {
+            ...item,
+            title: editForm.title,
+            content: editForm.content,
+            description: editForm.description,
+            tags: editForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
+            category: editForm.category,
+            type: editForm.type,
+          }
+        : item
+    );
+    // If you have a backend, call update API here
+    // For now, update filteredItems and close dialog
+    // setFilteredItems(updated); // This line is removed
+    setEditDialogOpen(false);
+    setEditItem(null);
+    toast({ title: "Success", description: "Item updated successfully!" });
+  };
+
+  // Define filtered before the JSX return
+  const filtered = items.filter((item) => {
+    // Debug log
+    console.log('Item:', item.title, '| item.category:', item.category, '| selectedCategory:', selectedCategory);
+    let match = true;
+    if (selectedCategory !== "all") {
+      match = item.category && item.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase();
+    }
+    if (searchQuery) {
+      match = match && (
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+        item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+    return match;
+  });
 
   return (
     <>
@@ -194,7 +269,15 @@ const Index = () => {
                     open={isAddDialogOpen}
                     onOpenChange={setIsAddDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 animate-scale-in">
+                      <Button
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 animate-scale-in"
+                        onClick={() => {
+                          setNewItem((prev) => ({
+                            ...prev,
+                            category: selectedCategory !== "all" ? selectedCategory : categories[0]?.name || "Coding",
+                          }));
+                        }}
+                      >
                         <Plus className="w-4 h-4 mr-2" />
                         Add Item
                       </Button>
@@ -343,7 +426,13 @@ const Index = () => {
                       <div key={category.name} className="relative group inline-block">
                         <Button
                           variant={selectedCategory === category.name ? "default" : "outline"}
-                          onClick={() => setSelectedCategory(category.name)}
+                          onClick={() => {
+                            setSelectedCategory(category.name);
+                            setNewItem((prev) => ({
+                              ...prev,
+                              category: category.name
+                            }));
+                          }}
                           className={selectedCategory === category.name ? "bg-purple-600 hover:bg-purple-700 pr-8" : "border-slate-600 text-slate-300 pr-8"}
                         >
                           <category.icon className="w-3 h-3 mr-1" />
@@ -435,128 +524,140 @@ const Index = () => {
                     Loading your items...
                   </span>
                 </div>
-              ) : filteredItems.length === 0 ? (
-                <div className="text-center py-12 animate-fade-in">
-                  <div className="w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <BookOpen className="w-12 h-12 text-slate-400" />
-                  </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    No items found
-                  </h3>
-                  <p className="text-slate-400 mb-6">
-                    {searchQuery || selectedCategory !== "all"
-                      ? "No items match your current filters"
-                      : "Start by adding your first link or note"}
-                  </p>
-                  <Button
-                    onClick={() => setIsAddDialogOpen(true)}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Your First Item
-                  </Button>
-                </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {filteredItems.map((item, index) => (
-                    <Card
-                      key={item.id}
-                      className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass"
-                      style={{ animationDelay: `${index * 100}ms` }}>
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-2">
-                            {item.is_pinned && (
-                              <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                            )}
-                            <CardTitle className="text-white text-sm font-medium truncate">
-                              {item.title}
-                            </CardTitle>
+                  {filtered.length === 0 ? (
+                    <div className="text-center py-12 animate-fade-in">
+                      <div className="w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <BookOpen className="w-12 h-12 text-slate-400" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        No items found
+                      </h3>
+                      <p className="text-slate-400 mb-6">
+                        {searchQuery || selectedCategory !== "all"
+                          ? "No items match your current filters"
+                          : "Start by adding your first link or note"}
+                      </p>
+                      <Button
+                        onClick={() => setIsAddDialogOpen(true)}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Your First Item
+                      </Button>
+                    </div>
+                  ) : (
+                    filtered.map((item, index) => (
+                      <Card
+                        key={item.id}
+                        className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass"
+                        style={{ animationDelay: `${index * 100}ms` }}>
+                        <CardHeader className="pb-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-2">
+                              {item.is_pinned && (
+                                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                              )}
+                              <CardTitle className="flex items-center gap-2 text-white text-sm font-medium truncate">
+                                {getIconForItem(item)}
+                                {item.title}
+                              </CardTitle>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  togglePin(item.id, !item.is_pinned)
+                                }
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-yellow-400">
+                                <Star
+                                  className={`w-4 h-4 ${
+                                    item.is_pinned
+                                      ? "fill-current text-yellow-400"
+                                      : ""
+                                  }`}
+                                />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openEditDialog(item)}
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-blue-400"
+                                title="Edit"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteItem(item.id)}
+                                className="h-8 w-8 p-0 text-slate-400 hover:text-red-400">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                togglePin(item.id, !item.is_pinned)
-                              }
-                              className="h-8 w-8 p-0 text-slate-400 hover:text-yellow-400">
-                              <Star
-                                className={`w-4 h-4 ${
-                                  item.is_pinned
-                                    ? "fill-current text-yellow-400"
-                                    : ""
-                                }`}
-                              />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteItem(item.id)}
-                              className="h-8 w-8 p-0 text-slate-400 hover:text-red-400">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <p className="text-slate-300 text-sm mb-3 line-clamp-2">
-                          {item.description ||
-                            (item.type === "link"
-                              ? "No description"
-                              : item.content)}
-                        </p>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <p className="text-slate-300 text-sm mb-3 line-clamp-2">
+                            {item.description ||
+                              (item.type === "link"
+                                ? "No description"
+                                : item.content)}
+                          </p>
 
-                        {item.type === "link" && (
-                          <div className="flex items-center space-x-2 mb-3">
-                            <Globe className="w-4 h-4 text-blue-400" />
-                            <a
-                              href={item.content}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300 text-sm truncate flex-1">
-                              {item.content}
-                            </a>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                navigator.clipboard.writeText(item.content);
-                                toast({
-                                  title: "Copied!",
-                                  description: "Link copied to clipboard",
-                                });
-                              }}
-                              className="h-6 w-6 p-0 text-slate-400 hover:text-white">
-                              <Copy className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        )}
+                          {item.type === "link" && (
+                            <div className="flex items-center space-x-2 mb-3">
+                              <Globe className="w-4 h-4 text-blue-400" />
+                              <a
+                                href={item.content}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 hover:text-blue-300 text-sm truncate flex-1">
+                                {item.content}
+                              </a>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  navigator.clipboard.writeText(item.content);
+                                  toast({
+                                    title: "Copied!",
+                                    description: "Link copied to clipboard",
+                                  });
+                                }}
+                                className="h-6 w-6 p-0 text-slate-400 hover:text-white">
+                                <Copy className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
 
-                        <div className="flex items-center justify-between">
-                          <div className="flex flex-wrap gap-1">
-                            {item.tags.slice(0, 3).map((tag, tagIndex) => (
-                              <Badge
-                                key={tagIndex}
-                                variant="secondary"
-                                className="text-xs bg-slate-700 text-slate-300">
-                                {tag}
-                              </Badge>
-                            ))}
-                            {item.tags.length > 3 && (
-                              <Badge
-                                variant="secondary"
-                                className="text-xs bg-slate-700 text-slate-300">
-                                +{item.tags.length - 3}
-                              </Badge>
-                            )}
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap gap-1">
+                              {item.tags.slice(0, 3).map((tag, tagIndex) => (
+                                <Badge
+                                  key={tagIndex}
+                                  variant="secondary"
+                                  className="text-xs bg-slate-700 text-slate-300">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {item.tags.length > 3 && (
+                                <Badge
+                                  variant="secondary"
+                                  className="text-xs bg-slate-700 text-slate-300">
+                                  +{item.tags.length - 3}
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-slate-500">
+                              {new Date(item.created_at).toLocaleDateString()}
+                            </span>
                           </div>
-                          <span className="text-xs text-slate-500">
-                            {new Date(item.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -602,6 +703,92 @@ const Index = () => {
         </SignedIn>
       </div>
       <Footer />
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+          <DialogHeader>
+            <DialogTitle>Edit Item</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-title">Title</Label>
+              <Input
+                id="edit-title"
+                value={editForm.title}
+                onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                className="bg-slate-700 border-slate-600"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-content">Content/URL</Label>
+              <Textarea
+                id="edit-content"
+                value={editForm.content}
+                onChange={e => setEditForm(f => ({ ...f, content: e.target.value }))}
+                className="bg-slate-700 border-slate-600"
+                rows={4}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea
+                id="edit-description"
+                value={editForm.description}
+                onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                className="bg-slate-700 border-slate-600"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-tags">Tags (comma-separated)</Label>
+              <Input
+                id="edit-tags"
+                value={editForm.tags}
+                onChange={e => setEditForm(f => ({ ...f, tags: e.target.value }))}
+                className="bg-slate-700 border-slate-600"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-category">Category</Label>
+                <Select
+                  value={editForm.category}
+                  onValueChange={value => setEditForm(f => ({ ...f, category: value }))}
+                >
+                  <SelectTrigger className="bg-slate-700 border-slate-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.name} value={cat.name}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-type">Type</Label>
+                <Select
+                  value={editForm.type}
+                  onValueChange={value => setEditForm(f => ({ ...f, type: value as "link" | "text" }))}
+                >
+                  <SelectTrigger className="bg-slate-700 border-slate-600">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="link">Link</SelectItem>
+                    <SelectItem value="text">Text</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="border-slate-600 text-slate-300">Cancel</Button>
+              <Button onClick={handleEditSave} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">Save Changes</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

@@ -247,5 +247,6 @@ export const useDatabase = () => {
     searchItems,
     getByCategory,
     refreshItems: loadItems,
+    loadItems, // Export loadItems so it can be called externally
   };
 };
