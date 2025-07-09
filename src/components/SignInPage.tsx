@@ -13,7 +13,7 @@ import {
 
 const SignInPage = () => {
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden flex flex-col">
+    <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden flex flex-col">
       {/* Enhanced Header */}
       <header className="relative z-20 p-4 sm:p-2 md:p-6">
         <div className="container mx-auto px-2 sm:px-1">
@@ -65,7 +65,7 @@ const SignInPage = () => {
         <div className="absolute bottom-20 right-10 w-4 h-4 bg-green-500/40 rounded-full blur-sm animate-bounce-gentle" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-2 sm:px-1 flex-1 flex items-start sm:items-center justify-center overflow-y-auto min-h-0 pt-6 sm:pt-0 pb-8">
+      <div className="relative z-10 container mx-auto px-2 sm:px-1 flex items-start sm:items-center justify-center pt-6 sm:pt-0 pb-8">
         <div className="w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-start sm:items-center">
           {/* Left side - Enhanced Features and branding */}
           <div className="space-y-4 md:space-y-6 text-white order-2 lg:order-1 px-4 sm:px-6 md:px-8">

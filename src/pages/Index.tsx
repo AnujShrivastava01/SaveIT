@@ -128,7 +128,7 @@ const Index = () => {
   return (
     <>
       <Preloader />
-      <div className="h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden flex flex-col">
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
         <SignedOut>
           <SignInPage />
         </SignedOut>
