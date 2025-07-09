@@ -1,0 +1,207 @@
+import { SignIn } from "@clerk/clerk-react";
+import {
+  BookOpen,
+  Star,
+  Shield,
+  Zap,
+  Sparkles,
+  ArrowRight,
+  Globe,
+  Search,
+  Bookmark,
+} from "lucide-react";
+
+const SignInPage = () => {
+  return (
+    <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden flex flex-col">
+      {/* Enhanced Header */}
+      <header className="relative z-20 p-4 md:p-6">
+        <div className="container mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 md:space-x-3 group">
+              <div className="relative">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white group-hover:rotate-12 transition-transform duration-300" />
+                </div>
+                <div className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+                <Sparkles className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 text-yellow-400 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+              <div className="group-hover:translate-x-1 transition-transform duration-300">
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white animate-slide-in-left">
+                  Save
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                    It
+                  </span>
+                </h1>
+                <p className="text-slate-400 text-xs md:text-sm animate-slide-in-left-delay hidden sm:block">
+                  Your Personal Knowledge Hub
+                </p>
+              </div>
+            </div>
+
+            <div className="hidden lg:flex items-center space-x-6 text-slate-300">
+              <span className="text-xs md:text-sm opacity-75">
+                Organize • Secure • Fast
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-purple-500/15 to-pink-500/15 rounded-full blur-3xl animate-spin-slow" />
+        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-l from-blue-500/15 to-purple-500/15 rounded-full blur-3xl animate-spin-slow-reverse" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-full blur-2xl animate-pulse" />
+        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-full blur-2xl animate-bounce-gentle" />
+      </div>
+
+      {/* Floating 3D-like elements */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-10 w-6 h-6 bg-purple-500/30 rounded-full blur-sm animate-bounce-1" />
+        <div className="absolute top-32 right-20 w-4 h-4 bg-pink-500/40 rounded-full blur-sm animate-bounce-2" />
+        <div className="absolute bottom-40 left-20 w-5 h-5 bg-blue-500/35 rounded-full blur-sm animate-bounce-3" />
+        <div className="absolute top-40 left-1/2 w-3 h-3 bg-yellow-500/50 rounded-full blur-sm animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-4 h-4 bg-green-500/40 rounded-full blur-sm animate-bounce-gentle" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 flex-1 flex items-center">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6 lg:gap-8 items-center w-full">
+          {/* Left side - Enhanced Features and branding */}
+          <div className="space-y-4 md:space-y-6 text-white order-2 lg:order-1">
+            <div className="space-y-3 md:space-y-4">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight animate-slide-up">
+                Organize your digital life with
+                <span className="text-purple-400 font-bold"> ease</span>
+              </h2>
+
+              <p className="text-base md:text-lg lg:text-xl text-slate-300 animate-slide-up delay-200 leading-relaxed">
+                Save links, store notes, and organize your digital content in
+                one beautiful, secure place.
+              </p>
+
+              {/* Call to action */}
+              <div className="flex items-center space-x-2 text-purple-300 animate-slide-up delay-300">
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5 animate-bounce-gentle" />
+                <span className="text-sm md:text-base lg:text-lg font-medium">
+                  Start organizing today
+                </span>
+              </div>
+            </div>{" "}
+            {/* Enhanced Features list */}
+            <div className="space-y-3 md:space-y-4">
+              <div className="flex items-start space-x-3 md:space-x-4 animate-slide-up delay-400 group">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500/20 to-purple-600/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-purple-500/20">
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Smart Organization
+                  </h3>
+                  <p className="text-slate-400 text-sm md:text-base">
+                    Automatically categorize and tag your saved content for easy
+                    retrieval.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 md:space-x-4 animate-slide-up delay-500 group">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-blue-500/20 to-blue-600/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-blue-500/20">
+                  <Shield className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Secure & Private
+                  </h3>
+                  <p className="text-slate-400 text-sm md:text-base">
+                    Your data is encrypted and stored securely with
+                    enterprise-grade protection.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3 md:space-x-4 animate-slide-up delay-600 group">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-green-500/20 to-green-600/30 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300 border border-green-500/20">
+                  <Zap className="w-5 h-5 md:w-6 md:h-6 text-green-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">
+                    Lightning Fast
+                  </h3>
+                  <p className="text-slate-400 text-sm md:text-base">
+                    Find what you need instantly with powerful search and
+                    filtering.
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Feature highlights instead of fake stats */}
+            <div className="grid grid-cols-3 gap-3 md:gap-4 pt-4 md:pt-6 border-t border-slate-700/50 animate-slide-up delay-700">
+              <div className="text-center group">
+                <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <Bookmark className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-purple-400" />
+                </div>
+                <div className="text-xs md:text-sm text-slate-300 font-medium">
+                  Save Anything
+                </div>
+              </div>
+              <div className="text-center group">
+                <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <Search className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-blue-400" />
+                </div>
+                <div className="text-xs md:text-sm text-slate-300 font-medium">
+                  Find Instantly
+                </div>
+              </div>
+              <div className="text-center group">
+                <div className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-green-500/20 to-teal-500/20 rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <Globe className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 text-green-400" />
+                </div>
+                <div className="text-xs md:text-sm text-slate-300 font-medium">
+                  Access Anywhere
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right side - Enhanced Sign in form */}
+          <div className="flex justify-center animate-scale-in delay-800 order-1 lg:order-2">
+            <div className="relative w-full max-w-md">
+              {/* Glow effect behind the form */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl"></div>
+
+              <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300">
+                <SignIn
+                  appearance={{
+                    elements: {
+                      formButtonPrimary:
+                        "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 text-sm md:text-base",
+                      card: "bg-transparent shadow-none",
+                      headerTitle: "text-white text-xl md:text-2xl font-bold",
+                      headerSubtitle: "text-slate-300 text-sm md:text-base",
+                      socialButtonsBlockButton:
+                        "bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-105 text-sm md:text-base",
+                      socialButtonsBlockButtonText:
+                        "text-white font-medium text-sm md:text-base",
+                      formFieldInput:
+                        "bg-white/10 border-white/20 text-white placeholder-slate-400 focus:border-purple-400 focus:ring-purple-400 transition-all duration-300 text-sm md:text-base",
+                      formFieldLabel:
+                        "text-white font-medium text-sm md:text-base",
+                      footerActionLink:
+                        "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm md:text-base",
+                      identityPreviewText: "text-white text-sm md:text-base",
+                      identityPreviewEditButton:
+                        "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm md:text-base",
+                    },
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SignInPage;

@@ -1,37 +1,17 @@
+import { createRoot } from "react-dom/client";
+import App from "./App.tsx";
+import "./index.css";
 
-import { createRoot } from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
-import App from './App.tsx'
-import './index.css'
+console.log("App starting...");
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+createRoot(document.getElementById("root")!).render(<App />);
 
-console.log('Clerk key status:', PUBLISHABLE_KEY ? 'Found' : 'Missing');
-console.log('App starting...');
-
-// Temporary bypass for debugging - remove this once Clerk is set up
-if (!PUBLISHABLE_KEY) {
-  console.warn("Missing Clerk Publishable Key - running without authentication");
-  createRoot(document.getElementById("root")!).render(
-    <App />
-  );
-} else {
-  createRoot(document.getElementById("root")!).render(
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <App />
-    </ClerkProvider>
-  );
+// Unregister any existing service workers to prevent fetch interference
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(function (registrations) {
+    for (let registration of registrations) {
+      registration.unregister();
+      console.log("Service worker unregistered:", registration);
+    }
+  });
 }
-
-// Comment out service worker registration temporarily to avoid conflicts
-// if ('serviceWorker' in navigator) {
-//   window.addEventListener('load', () => {
-//     navigator.serviceWorker.register('/sw.js')
-//       .then((registration) => {
-//         console.log('SW registered: ', registration);
-//       })
-//       .catch((registrationError) => {
-//         console.log('SW registration failed: ', registrationError);
-//       });
-//   });
-// }
