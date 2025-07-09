@@ -278,16 +278,16 @@ const Index = () => {
 
                 {/* Search and Category Filter */}
                 <div className="flex flex-col md:flex-row gap-4 animate-slide-up">
-                  <div className="flex-1 relative">
+                  <div className="flex-1 relative min-w-0">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
                       placeholder="Search your saved items..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400"
+                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 w-full min-w-0"
                     />
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 w-full md:w-auto">
                     <Button
                       variant={
                         selectedCategory === "all" ? "default" : "outline"
@@ -324,7 +324,7 @@ const Index = () => {
             </div>
 
             {/* Items Grid */}
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-2 sm:px-4 py-8 w-full">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
@@ -353,7 +353,7 @@ const Index = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filteredItems.map((item, index) => (
                     <Card
                       key={item.id}

@@ -15,19 +15,19 @@ const SignInPage = () => {
   return (
     <div className="h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden flex flex-col">
       {/* Enhanced Header */}
-      <header className="relative z-20 p-4 md:p-6">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between">
+      <header className="relative z-20 p-4 sm:p-2 md:p-6">
+        <div className="container mx-auto px-2 sm:px-1">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
             <div className="flex items-center space-x-2 md:space-x-3 group">
               <div className="relative">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <BookOpen className="w-5 h-5 md:w-7 md:h-7 text-white group-hover:rotate-12 transition-transform duration-300" />
+                <div className="w-10 h-10 sm:w-8 sm:h-8 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <BookOpen className="w-5 h-5 sm:w-4 sm:h-4 md:w-7 md:h-7 text-white group-hover:rotate-12 transition-transform duration-300" />
                 </div>
-                <div className="absolute inset-0 w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-                <Sparkles className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 text-yellow-400 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 w-10 h-10 sm:w-8 sm:h-8 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+                <Sparkles className="absolute -top-1 -right-1 w-3 h-3 sm:w-2 sm:h-2 md:w-4 md:h-4 text-yellow-400 animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
               <div className="group-hover:translate-x-1 transition-transform duration-300">
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-white animate-slide-in-left">
+                <h1 className="text-lg sm:text-base md:text-2xl lg:text-3xl font-bold text-white animate-slide-in-left">
                   Save
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                     It
@@ -65,17 +65,17 @@ const SignInPage = () => {
         <div className="absolute bottom-20 right-10 w-4 h-4 bg-green-500/40 rounded-full blur-sm animate-bounce-gentle" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 flex-1 flex items-center">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-6 lg:gap-8 items-center w-full">
+      <div className="relative z-10 container mx-auto px-2 sm:px-1 flex-1 flex items-start sm:items-center justify-center overflow-y-auto min-h-0 pt-6 sm:pt-0 pb-8">
+        <div className="w-full max-w-full sm:max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 items-start sm:items-center">
           {/* Left side - Enhanced Features and branding */}
-          <div className="space-y-4 md:space-y-6 text-white order-2 lg:order-1">
+          <div className="space-y-4 md:space-y-6 text-white order-2 lg:order-1 px-4 sm:px-6 md:px-8">
             <div className="space-y-3 md:space-y-4">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight animate-slide-up">
+              <h2 className="text-xl sm:text-lg md:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight animate-slide-up">
                 Organize your digital life with
                 <span className="text-purple-400 font-bold"> ease</span>
               </h2>
 
-              <p className="text-base md:text-lg lg:text-xl text-slate-300 animate-slide-up delay-200 leading-relaxed">
+              <p className="text-sm sm:text-xs md:text-lg lg:text-xl text-slate-300 animate-slide-up delay-200 leading-relaxed">
                 Save links, store notes, and organize your digital content in
                 one beautiful, secure place.
               </p>
@@ -83,7 +83,7 @@ const SignInPage = () => {
               {/* Call to action */}
               <div className="flex items-center space-x-2 text-purple-300 animate-slide-up delay-300">
                 <ArrowRight className="w-4 h-4 md:w-5 md:h-5 animate-bounce-gentle" />
-                <span className="text-sm md:text-base lg:text-lg font-medium">
+                <span className="text-xs sm:text-xs md:text-base lg:text-lg font-medium">
                   Start organizing today
                 </span>
               </div>
@@ -165,37 +165,32 @@ const SignInPage = () => {
           </div>
 
           {/* Right side - Enhanced Sign in form */}
-          <div className="flex justify-center animate-scale-in delay-800 order-1 lg:order-2">
-            <div className="relative w-full max-w-md">
-              {/* Glow effect behind the form */}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl blur-xl"></div>
-
-              <div className="relative bg-white/10 backdrop-blur-xl rounded-2xl p-6 md:p-8 shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300">
-                <SignIn
-                  appearance={{
-                    elements: {
-                      formButtonPrimary:
-                        "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 text-sm md:text-base",
-                      card: "bg-transparent shadow-none",
-                      headerTitle: "text-white text-xl md:text-2xl font-bold",
-                      headerSubtitle: "text-slate-300 text-sm md:text-base",
-                      socialButtonsBlockButton:
-                        "bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-105 text-sm md:text-base",
-                      socialButtonsBlockButtonText:
-                        "text-white font-medium text-sm md:text-base",
-                      formFieldInput:
-                        "bg-white/10 border-white/20 text-white placeholder-slate-400 focus:border-purple-400 focus:ring-purple-400 transition-all duration-300 text-sm md:text-base",
-                      formFieldLabel:
-                        "text-white font-medium text-sm md:text-base",
-                      footerActionLink:
-                        "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm md:text-base",
-                      identityPreviewText: "text-white text-sm md:text-base",
-                      identityPreviewEditButton:
-                        "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm md:text-base",
-                    },
-                  }}
-                />
-              </div>
+          <div className="flex justify-center animate-scale-in delay-800 order-1 lg:order-2 w-full">
+            <div className="flex flex-col items-center justify-center w-full max-w-[95vw] sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto mt-4 sm:mt-0 p-2 sm:p-4 md:p-6 lg:p-8 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl backdrop-blur-xl shadow-2xl border border-white/20 overflow-hidden box-border">
+              <SignIn
+                appearance={{
+                  elements: {
+                    formButtonPrimary:
+                      "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25 text-xs sm:text-sm md:text-base",
+                    card: "bg-transparent shadow-none w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto",
+                    headerTitle: "text-white text-lg sm:text-xl md:text-2xl font-bold",
+                    headerSubtitle: "text-slate-300 text-xs sm:text-sm md:text-base",
+                    socialButtonsBlockButton:
+                      "bg-white/10 border-white/20 text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm md:text-base",
+                    socialButtonsBlockButtonText:
+                      "text-white font-medium text-xs sm:text-sm md:text-base",
+                    formFieldInput:
+                      "bg-white/10 border-white/20 text-white placeholder-slate-400 focus:border-purple-400 focus:ring-purple-400 transition-all duration-300 text-xs sm:text-sm md:text-base",
+                    formFieldLabel:
+                      "text-white font-medium text-xs sm:text-sm md:text-base",
+                    footerActionLink:
+                      "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-xs sm:text-sm md:text-base",
+                    identityPreviewText: "text-white text-xs sm:text-sm md:text-base",
+                    identityPreviewEditButton:
+                      "text-purple-400 hover:text-purple-300 transition-colors duration-300 text-xs sm:text-sm md:text-base",
+                  },
+                }}
+              />
             </div>
           </div>
         </div>
