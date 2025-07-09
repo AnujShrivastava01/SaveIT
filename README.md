@@ -1,34 +1,6 @@
 <div align="center">
 
-# 📚 SaveIT - Your Pers### 🎬 Demo
-
-🌐 **Live Demo**: [SaveIT App](https://save-it-pink.vercel.app/)
-
-_Experience the full functionality with the live demo!_
-
-<div align="center">
-<img width="80%- 📖 Read the documentation
-
-<div align="center">
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=footer&animation=fadeIn"/>
-</div>
-
----
-
-<div align="center">
-
-### 💖 Made with Love by [Anuj](https://github.com/yourusername)
-
-<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
-
-_Building tools that make developers' lives easier, one commit at a time._
-
-<br>
-
-<img src="https://skillicons.dev/icons?i=react,typescript,nodejs,vscode&theme=light" alt="Technologies I Love" />
-
-</div>//capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
-</div>Knowledge Hub
+# 📚 SaveIT - Your Personal Knowledge Hub
 
 <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/bookmark.svg" width="100" height="100" alt="SaveIT Logo">
 
@@ -41,20 +13,6 @@ _Save, organize, and access your digital knowledge effortlessly_
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com/)
 
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&animation=fadeIn"/>
-
-</div>ter">
-
-# 📚 SaveIT - Your Personal Knowledge Hub
-
-<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/bookmark.svg" width="100" height="100" alt="SaveIT Logo">
-
-_Save, organize, and access your digital knowledge effortlessly_
-
-[![Demo](https://img.shields.io/badge/Demo-Live%20Site-green)](https://save-it-pink.vercel.app/)
-[![Made with Love](https://img.shields.io/badge/Made%20with-❤️-red)](#)
-[![React](https://img.shields.io/badge/React-18.3.1-blue)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-blue)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com/)
 
 </div>
 
@@ -78,6 +36,10 @@ SaveIT is a modern, intuitive web application designed to help you save, organiz
 🌐 **Live Demo**: [SaveIT App](https://save-it-pink.vercel.app/)
 
 _Experience the full functionality with the live demo!_
+
+<div align="center">
+<img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
+</div>
 
 ## 🛠️ Tech Stack
 
@@ -254,6 +216,23 @@ If you encounter any issues or have questions:
 
 <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
 
+---
+
+<div align="center">
+
+### 💖 Made with Love by [Anuj Shrivastava](https://www.linkedin.com/in/anujshrivastava1/)
+
+<img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/heart.svg" width="20" height="20" alt="Heart">
+
 _Building tools that make developers' lives easier, one commit at a time._
+
+<br>
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/anujshrivastava1/)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/yourusername)
+
+<br>
+
+<img src="https://skillicons.dev/icons?i=react,typescript,nodejs,vscode&theme=light" alt="Technologies I Love" />
 
 </div>
