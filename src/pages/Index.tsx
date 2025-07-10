@@ -64,9 +64,31 @@ function getDomain(url: string) {
 
 // Utility function to get icon for item
 function getIconForItem(item: SavedItem) {
-  if (item.content?.includes("linkedin.com")) return <Linkedin className="w-5 h-5 text-blue-600" />;
-  if (item.content?.includes("github.com")) return <Github className="w-5 h-5 text-gray-800" />;
-  if (item.content?.includes("twitter.com")) return <Twitter className="w-5 h-5 text-blue-400" />;
+  // Priority 1: Custom image from user
+  if (item.custom_image && item.custom_image.trim()) {
+    return (
+      <img
+        src={item.custom_image}
+        alt="custom icon"
+        className="w-5 h-5 rounded object-cover"
+        style={{ background: "#fff" }}
+        onError={(e) => {
+          // Fallback if custom image fails to load
+          e.currentTarget.style.display = "none";
+        }}
+      />
+    );
+  }
+
+  // Priority 2: Social media specific icons
+  if (item.content?.includes("linkedin.com"))
+    return <Linkedin className="w-5 h-5 text-blue-600" />;
+  if (item.content?.includes("github.com"))
+    return <Github className="w-5 h-5 text-gray-800" />;
+  if (item.content?.includes("twitter.com"))
+    return <Twitter className="w-5 h-5 text-blue-400" />;
+
+  // Priority 3: Favicon from domain
   const domain = getDomain(item.content);
   if (domain) {
     return (
@@ -74,15 +96,25 @@ function getIconForItem(item: SavedItem) {
         src={`https://www.google.com/s2/favicons?domain=${domain}`}
         alt={domain}
         className="w-5 h-5 rounded"
-        style={{ background: '#fff' }}
+        style={{ background: "#fff" }}
       />
     );
   }
+
+  // Priority 4: Default globe icon
   return <Globe className="w-5 h-5 text-slate-400" />;
 }
 
 const Index = () => {
-  const { items, loading, addItem, deleteItem, togglePin, loadItems, updateItem } = useDatabase();
+  const {
+    items,
+    loading,
+    addItem,
+    deleteItem,
+    togglePin,
+    loadItems,
+    updateItem,
+  } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -93,6 +125,7 @@ const Index = () => {
     tags: "",
     category: "Coding",
     type: "link" as "link" | "text",
+    custom_image: "",
   });
   const [categories, setCategories] = useState(() => {
     const stored = localStorage.getItem(CATEGORIES_KEY);
@@ -124,15 +157,21 @@ const Index = () => {
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<SavedItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editForm, setEditForm] = useState({ title: "", content: "", description: "", tags: "", category: "Coding", type: "link" as "link" | "text" });
+  const [editForm, setEditForm] = useState({
+    title: "",
+    content: "",
+    description: "",
+    tags: "",
+    category: "Coding",
+    type: "link" as "link" | "text",
+    custom_image: "",
+  });
 
   // Persist categories to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(
       CATEGORIES_KEY,
-      JSON.stringify(
-        categories.map(cat => ({ ...cat, icon: cat.icon.name }))
-      )
+      JSON.stringify(categories.map((cat) => ({ ...cat, icon: cat.icon.name })))
     );
   }, [categories]);
 
@@ -146,8 +185,8 @@ const Index = () => {
       return;
     }
 
-    console.log('Selected category when adding:', selectedCategory);
-    console.log('newItem.category when adding:', newItem.category);
+    console.log("Selected category when adding:", selectedCategory);
+    console.log("newItem.category when adding:", newItem.category);
 
     try {
       await addItem({
@@ -161,6 +200,7 @@ const Index = () => {
         category: newItem.category.trim(),
         type: newItem.type,
         is_pinned: false,
+        custom_image: newItem.custom_image,
       });
 
       await loadItems(); // Refresh items after adding
@@ -173,6 +213,7 @@ const Index = () => {
         tags: "",
         category: "Coding",
         type: "link",
+        custom_image: "",
       });
       setIsAddDialogOpen(false);
       setSelectedCategory(newItem.category);
@@ -191,6 +232,7 @@ const Index = () => {
       tags: item.tags.join(", "),
       category: item.category,
       type: item.type,
+      custom_image: item.custom_image || "",
     });
     setEditDialogOpen(true);
   };
@@ -203,9 +245,13 @@ const Index = () => {
         title: editForm.title,
         content: editForm.content,
         description: editForm.description,
-        tags: editForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        tags: editForm.tags
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean),
         category: editForm.category,
         type: editForm.type,
+        custom_image: editForm.custom_image,
       });
       setEditDialogOpen(false);
       setEditItem(null);
@@ -213,25 +259,44 @@ const Index = () => {
       // Optionally reload items here if not auto-updating
       // await loadItems();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to update item", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update item",
+        variant: "destructive",
+      });
     }
   };
 
   // Define filtered before the JSX return
   const filtered = items.filter((item) => {
     // Debug log
-    console.log('Item:', item.title, '| item.category:', item.category, '| selectedCategory:', selectedCategory);
+    console.log(
+      "Item:",
+      item.title,
+      "| item.category:",
+      item.category,
+      "| selectedCategory:",
+      selectedCategory
+    );
     let match = true;
     if (selectedCategory !== "all") {
-      match = item.category && item.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase();
+      match =
+        item.category &&
+        item.category.trim().toLowerCase() ===
+          selectedCategory.trim().toLowerCase();
     }
     if (searchQuery) {
-      match = match && (
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-        item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      match =
+        match &&
+        (item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (item.description
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase()) ??
+            false) ||
+          item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          ));
     }
     return match;
   });
@@ -271,10 +336,12 @@ const Index = () => {
                         onClick={() => {
                           setNewItem((prev) => ({
                             ...prev,
-                            category: selectedCategory !== "all" ? selectedCategory : categories[0]?.name || "Coding",
+                            category:
+                              selectedCategory !== "all"
+                                ? selectedCategory
+                                : categories[0]?.name || "Coding",
                           }));
-                        }}
-                      >
+                        }}>
                         <Plus className="w-4 h-4 mr-2" />
                         Add Item
                       </Button>
@@ -377,6 +444,42 @@ const Index = () => {
                             className="bg-slate-700 border-slate-600"
                           />
                         </div>
+                        <div>
+                          <Label htmlFor="custom-image">
+                            Custom Image URL (optional)
+                          </Label>
+                          <Input
+                            id="custom-image"
+                            value={newItem.custom_image}
+                            onChange={(e) =>
+                              setNewItem({
+                                ...newItem,
+                                custom_image: e.target.value,
+                              })
+                            }
+                            placeholder="https://example.com/image.png"
+                            className="bg-slate-700 border-slate-600"
+                          />
+                          <p className="text-xs text-slate-400 mt-1">
+                            Add a custom image URL to display as the card icon
+                            (overrides favicon)
+                          </p>
+                          {newItem.custom_image && (
+                            <div className="mt-2 flex items-center space-x-2">
+                              <span className="text-sm text-slate-300">
+                                Preview:
+                              </span>
+                              <img
+                                src={newItem.custom_image}
+                                alt="preview"
+                                className="w-8 h-8 rounded object-cover border border-slate-600"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = "none";
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
                         <div className="flex justify-end space-x-2">
                           <Button
                             variant="outline"
@@ -420,18 +523,27 @@ const Index = () => {
                       All
                     </Button>
                     {categories.map((category, idx) => (
-                      <div key={category.name} className="relative group inline-block">
+                      <div
+                        key={category.name}
+                        className="relative group inline-block">
                         <Button
-                          variant={selectedCategory === category.name ? "default" : "outline"}
+                          variant={
+                            selectedCategory === category.name
+                              ? "default"
+                              : "outline"
+                          }
                           onClick={() => {
                             setSelectedCategory(category.name);
                             setNewItem((prev) => ({
                               ...prev,
-                              category: category.name
+                              category: category.name,
                             }));
                           }}
-                          className={selectedCategory === category.name ? "bg-purple-600 hover:bg-purple-700 pr-8" : "border-slate-600 text-slate-300 pr-8"}
-                        >
+                          className={
+                            selectedCategory === category.name
+                              ? "bg-purple-600 hover:bg-purple-700 pr-8"
+                              : "border-slate-600 text-slate-300 pr-8"
+                          }>
                           <category.icon className="w-3 h-3 mr-1" />
                           {category.name}
                         </Button>
@@ -439,30 +551,52 @@ const Index = () => {
                         <button
                           className="absolute top-1/2 right-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500"
                           title={`Delete ${category.name}`}
-                          onClick={e => {
+                          onClick={(e) => {
                             e.stopPropagation();
                             setConfirmDeleteIdx(idx);
-                          }}
-                        >
+                          }}>
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     ))}
                     {/* Confirm Delete Dialog */}
-                    <Dialog open={confirmDeleteIdx !== null} onOpenChange={open => !open && setConfirmDeleteIdx(null)}>
+                    <Dialog
+                      open={confirmDeleteIdx !== null}
+                      onOpenChange={(open) =>
+                        !open && setConfirmDeleteIdx(null)
+                      }>
                       <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-xs">
                         <DialogHeader>
                           <DialogTitle>Delete Folder?</DialogTitle>
                         </DialogHeader>
-                        <div className="py-2">Are you sure you want to delete the folder <b>{confirmDeleteIdx !== null ? categories[confirmDeleteIdx]?.name : ""}</b>? This cannot be undone.</div>
+                        <div className="py-2">
+                          Are you sure you want to delete the folder{" "}
+                          <b>
+                            {confirmDeleteIdx !== null
+                              ? categories[confirmDeleteIdx]?.name
+                              : ""}
+                          </b>
+                          ? This cannot be undone.
+                        </div>
                         <div className="flex justify-end space-x-2 mt-4">
-                          <Button variant="outline" onClick={() => setConfirmDeleteIdx(null)} className="border-slate-600 text-slate-300">Cancel</Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setConfirmDeleteIdx(null)}
+                            className="border-slate-600 text-slate-300">
+                            Cancel
+                          </Button>
                           <Button
                             onClick={() => {
                               if (confirmDeleteIdx !== null) {
-                                const delName = categories[confirmDeleteIdx].name;
-                                setCategories(categories.filter((_, i) => i !== confirmDeleteIdx));
-                                if (selectedCategory === delName) setSelectedCategory("all");
+                                const delName =
+                                  categories[confirmDeleteIdx].name;
+                                setCategories(
+                                  categories.filter(
+                                    (_, i) => i !== confirmDeleteIdx
+                                  )
+                                );
+                                if (selectedCategory === delName)
+                                  setSelectedCategory("all");
                                 setConfirmDeleteIdx(null);
                               }
                             }}
@@ -473,9 +607,14 @@ const Index = () => {
                       </DialogContent>
                     </Dialog>
                     {/* End Confirm Delete Dialog */}
-                    <Dialog open={showAddFolder} onOpenChange={setShowAddFolder}>
+                    <Dialog
+                      open={showAddFolder}
+                      onOpenChange={setShowAddFolder}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="border-slate-600 text-slate-300" onClick={() => setShowAddFolder(true)}>
+                        <Button
+                          variant="outline"
+                          className="border-slate-600 text-slate-300"
+                          onClick={() => setShowAddFolder(true)}>
                           + Add Folder
                         </Button>
                       </DialogTrigger>
@@ -487,15 +626,34 @@ const Index = () => {
                           <Input
                             placeholder="Folder name"
                             value={newFolderName}
-                            onChange={e => setNewFolderName(e.target.value)}
+                            onChange={(e) => setNewFolderName(e.target.value)}
                             className="bg-slate-700 border-slate-600"
                           />
                           <div className="flex justify-end space-x-2">
-                            <Button variant="outline" onClick={() => setShowAddFolder(false)} className="border-slate-600 text-slate-300">Cancel</Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowAddFolder(false)}
+                              className="border-slate-600 text-slate-300">
+                              Cancel
+                            </Button>
                             <Button
                               onClick={() => {
-                                if (newFolderName.trim() && !categories.some(cat => cat.name.toLowerCase() === newFolderName.trim().toLowerCase())) {
-                                  setCategories([...categories, { name: newFolderName.trim(), icon: Folder, color: "bg-gray-500" }]);
+                                if (
+                                  newFolderName.trim() &&
+                                  !categories.some(
+                                    (cat) =>
+                                      cat.name.toLowerCase() ===
+                                      newFolderName.trim().toLowerCase()
+                                  )
+                                ) {
+                                  setCategories([
+                                    ...categories,
+                                    {
+                                      name: newFolderName.trim(),
+                                      icon: Folder,
+                                      color: "bg-gray-500",
+                                    },
+                                  ]);
                                   setNewFolderName("");
                                   setShowAddFolder(false);
                                 }
@@ -581,8 +739,7 @@ const Index = () => {
                                 size="sm"
                                 onClick={() => openEditDialog(item)}
                                 className="h-8 w-8 p-0 text-slate-400 hover:text-blue-400"
-                                title="Edit"
-                              >
+                                title="Edit">
                                 <Pencil className="w-4 h-4" />
                               </Button>
                               <Button
@@ -711,7 +868,9 @@ const Index = () => {
               <Input
                 id="edit-title"
                 value={editForm.title}
-                onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, title: e.target.value }))
+                }
                 className="bg-slate-700 border-slate-600"
               />
             </div>
@@ -720,7 +879,9 @@ const Index = () => {
               <Textarea
                 id="edit-content"
                 value={editForm.content}
-                onChange={e => setEditForm(f => ({ ...f, content: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, content: e.target.value }))
+                }
                 className="bg-slate-700 border-slate-600"
                 rows={4}
               />
@@ -730,7 +891,9 @@ const Index = () => {
               <Textarea
                 id="edit-description"
                 value={editForm.description}
-                onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, description: e.target.value }))
+                }
                 className="bg-slate-700 border-slate-600"
                 rows={3}
               />
@@ -740,17 +903,51 @@ const Index = () => {
               <Input
                 id="edit-tags"
                 value={editForm.tags}
-                onChange={e => setEditForm(f => ({ ...f, tags: e.target.value }))}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, tags: e.target.value }))
+                }
                 className="bg-slate-700 border-slate-600"
               />
+            </div>
+            <div>
+              <Label htmlFor="edit-custom-image">
+                Custom Image URL (optional)
+              </Label>
+              <Input
+                id="edit-custom-image"
+                value={editForm.custom_image}
+                onChange={(e) =>
+                  setEditForm((f) => ({ ...f, custom_image: e.target.value }))
+                }
+                placeholder="https://example.com/image.png"
+                className="bg-slate-700 border-slate-600"
+              />
+              <p className="text-xs text-slate-400 mt-1">
+                Add a custom image URL to display as the card icon (overrides
+                favicon)
+              </p>
+              {editForm.custom_image && (
+                <div className="mt-2 flex items-center space-x-2">
+                  <span className="text-sm text-slate-300">Preview:</span>
+                  <img
+                    src={editForm.custom_image}
+                    alt="preview"
+                    className="w-8 h-8 rounded object-cover border border-slate-600"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                </div>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-category">Category</Label>
                 <Select
                   value={editForm.category}
-                  onValueChange={value => setEditForm(f => ({ ...f, category: value }))}
-                >
+                  onValueChange={(value) =>
+                    setEditForm((f) => ({ ...f, category: value }))
+                  }>
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />
                   </SelectTrigger>
@@ -767,8 +964,12 @@ const Index = () => {
                 <Label htmlFor="edit-type">Type</Label>
                 <Select
                   value={editForm.type}
-                  onValueChange={value => setEditForm(f => ({ ...f, type: value as "link" | "text" }))}
-                >
+                  onValueChange={(value) =>
+                    setEditForm((f) => ({
+                      ...f,
+                      type: value as "link" | "text",
+                    }))
+                  }>
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />
                   </SelectTrigger>
@@ -780,8 +981,17 @@ const Index = () => {
               </div>
             </div>
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="border-slate-600 text-slate-300">Cancel</Button>
-              <Button onClick={handleEditSave} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">Save Changes</Button>
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+                className="border-slate-600 text-slate-300">
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEditSave}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                Save Changes
+              </Button>
             </div>
           </div>
         </DialogContent>

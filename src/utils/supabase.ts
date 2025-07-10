@@ -36,6 +36,7 @@ export interface SavedItem {
   category: string;
   type: "link" | "text";
   is_pinned: boolean;
+  custom_image?: string;
   created_at: string;
   updated_at: string;
 }

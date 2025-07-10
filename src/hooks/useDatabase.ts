@@ -89,6 +89,7 @@ export const useDatabase = () => {
 
       // Use mock data if Supabase is not configured
       if (!supabase) {
+        console.log("Using mock database for add");
         const newItem = await mockDatabase.createSavedItem({
           ...item,
           user_id: user.id,
@@ -100,6 +101,7 @@ export const useDatabase = () => {
         });
         return newItem;
       } else {
+        console.log("Using Supabase for add");
         const newItem = await createSavedItem(user.id, item);
         setItems((prev) => [newItem, ...prev]);
         toast({
@@ -122,18 +124,39 @@ export const useDatabase = () => {
 
   const updateItem = async (itemId: string, updates: Partial<SavedItem>) => {
     try {
-      const updatedItem = await updateSavedItem(itemId, updates);
-      setItems((prev) =>
-        prev.map((item) =>
-          item.id === itemId ? { ...item, ...updatedItem } : item
-        )
-      );
-      toast({
-        title: "Success",
-        description: "Item updated successfully!",
-      });
-      return updatedItem;
+      console.log("updateItem called with:", { itemId, updates });
+      console.log("Supabase configured:", !!supabase);
+
+      // Use mock data if Supabase is not configured
+      if (!supabase) {
+        console.log("Using mock database for update");
+        const updatedItem = await mockDatabase.updateSavedItem(itemId, updates);
+        setItems((prev) =>
+          prev.map((item) =>
+            item.id === itemId ? { ...item, ...updatedItem } : item
+          )
+        );
+        toast({
+          title: "Success",
+          description: "Item updated successfully! (Demo mode)",
+        });
+        return updatedItem;
+      } else {
+        console.log("Using Supabase for update");
+        const updatedItem = await updateSavedItem(itemId, updates);
+        setItems((prev) =>
+          prev.map((item) =>
+            item.id === itemId ? { ...item, ...updatedItem } : item
+          )
+        );
+        toast({
+          title: "Success",
+          description: "Item updated successfully!",
+        });
+        return updatedItem;
+      }
     } catch (err) {
+      console.error("Update error in hook:", err);
       toast({
         title: "Error",
         description: "Failed to update item",

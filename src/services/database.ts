@@ -125,6 +125,8 @@ export const updateSavedItem = async (
 ) => {
   checkSupabaseConfig();
 
+  console.log("Updating item:", itemId, "with updates:", updates);
+
   const { data, error } = await supabase!
     .from(TABLES.SAVED_ITEMS)
     .update({
@@ -136,9 +138,11 @@ export const updateSavedItem = async (
     .single();
 
   if (error) {
-    console.error("Error creating user profile:", error);
+    console.error("Error updating item:", error);
+    console.error("Full error details:", JSON.stringify(error, null, 2));
     throw error;
   }
+  console.log("Update successful:", data);
   return data;
 };
 
