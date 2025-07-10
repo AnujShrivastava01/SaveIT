@@ -27,7 +27,8 @@ SaveIT is a modern, intuitive web application designed to help you save, organiz
 - 🔍 **Powerful Search** - Find your saved content instantly
 - 📌 **Pin Important Items** - Keep your most important content at the top
 - 🌐 **Link Preview** - Automatic favicon detection for website links
-- 📱 **Responsive Design** - Works perfectly on all devices
+- �️ **Custom Images** - Add personalized images to your cards via URL or data URI
+- �📱 **Responsive Design** - Works perfectly on all devices
 - ⚡ **Real-time Updates** - Instant synchronization across devices
 - 🎨 **Beautiful UI** - Modern design with smooth animations
 
@@ -104,7 +105,8 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 1. Create a Supabase project at [supabase.com](https://supabase.com)
 2. Run the SQL script from `supabase-setup.sql` in your Supabase SQL editor
-3. Update your `.env` file with your Supabase credentials
+3. Run the custom image migration from `add-custom-image-migration.sql` (if needed)
+4. Update your `.env` file with your Supabase credentials
 
 For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
@@ -119,7 +121,20 @@ For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 1. **Click the "+" button** to add new content
 2. **Choose content type**: Link or Text
 3. **Add details**: Title, description, tags, and category
-4. **Save and organize** your content instantly
+4. **Custom Image (Optional)**: Add a personalized image URL to display as the card icon
+5. **Save and organize** your content instantly
+
+### Custom Image Feature
+
+SaveIT now supports custom images for your saved items:
+
+- **🖼️ Image URLs**: Add any publicly accessible image URL
+- **📊 Data URIs**: Support for base64 encoded images
+- **🔄 Live Preview**: See your image preview before saving
+- **🎯 Icon Override**: Custom images take priority over automatic favicons
+- **✨ Fallback**: Graceful fallback to favicon if custom image fails to load
+
+**Supported formats**: JPG, PNG, GIF, SVG, WebP and more
 
 ### Managing Items
 
@@ -150,12 +165,26 @@ For detailed setup instructions, see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md)
 
 - Automatic favicon detection
 - Social media platform recognition (LinkedIn, GitHub, Twitter)
+- Custom image support with URL/data URI input
 - Clean domain display
 - Link validation
+- Graceful fallbacks for failed image loads
 
 <div align="center">
 <img width="80%" src="https://capsule-render.vercel.app/api?type=rect&color=gradient&height=4&section=header&%20render"/>
 </div>
+
+## 🚀 Recent Updates
+
+### ✨ v1.2.0 - Custom Image Feature
+
+- **🖼️ Custom Images**: Users can now add custom images to their saved items
+- **🔄 Live Preview**: Real-time preview of custom images in add/edit forms
+- **📊 Data URI Support**: Support for base64 encoded images
+- **🎯 Smart Fallbacks**: Graceful fallback to favicons if custom images fail
+- **💾 Database Migration**: Added `custom_image` column to support the feature
+
+---
 
 ## 🤝 Contributing
 
@@ -214,10 +243,7 @@ If you encounter any issues or have questions:
 
 ### Made with 💖 by [Anuj](https://github.com/yourusername)
 
-
-
 <div align="center">
-
 
 _Building tools that make developers' lives easier, one commit at a time._
 
