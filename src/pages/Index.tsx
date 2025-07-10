@@ -82,7 +82,7 @@ function getIconForItem(item: SavedItem) {
 }
 
 const Index = () => {
-  const { items, loading, addItem, deleteItem, togglePin, loadItems } = useDatabase();
+  const { items, loading, addItem, deleteItem, togglePin, loadItems, updateItem } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -196,28 +196,25 @@ const Index = () => {
   };
 
   // Handle edit save
-  const handleEditSave = () => {
+  const handleEditSave = async () => {
     if (!editItem) return;
-    // Update in items (simulate DB update)
-    const updated = items.map((item) =>
-      item.id === editItem.id
-        ? {
-            ...item,
-            title: editForm.title,
-            content: editForm.content,
-            description: editForm.description,
-            tags: editForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
-            category: editForm.category,
-            type: editForm.type,
-          }
-        : item
-    );
-    // If you have a backend, call update API here
-    // For now, update filteredItems and close dialog
-    // setFilteredItems(updated); // This line is removed
-    setEditDialogOpen(false);
-    setEditItem(null);
-    toast({ title: "Success", description: "Item updated successfully!" });
+    try {
+      await updateItem(editItem.id, {
+        title: editForm.title,
+        content: editForm.content,
+        description: editForm.description,
+        tags: editForm.tags.split(",").map((t) => t.trim()).filter(Boolean),
+        category: editForm.category,
+        type: editForm.type,
+      });
+      setEditDialogOpen(false);
+      setEditItem(null);
+      toast({ title: "Success", description: "Item updated successfully!" });
+      // Optionally reload items here if not auto-updating
+      // await loadItems();
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update item", variant: "destructive" });
+    }
   };
 
   // Define filtered before the JSX return
