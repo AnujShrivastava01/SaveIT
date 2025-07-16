@@ -11,6 +11,9 @@ import { useEffect, useState } from "react";
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const isClerkConfigured = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  // PWA install prompt state
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +23,27 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Listen for beforeinstallprompt event
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setShowInstall(false);
+      }
+    }
+  };
 
   return (
     <header
@@ -52,6 +76,14 @@ const Header = () => {
           </div>
 
           <div className="flex items-center space-x-2 md:space-x-4 animate-slide-in-right">
+            {showInstall && (
+              <button
+                onClick={handleInstallClick}
+                className="px-3 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow hover:from-purple-600 hover:to-pink-600 transition-all duration-300 mr-2"
+                style={{ outline: "none" }}>
+                Install App
+              </button>
+            )}
             {isClerkConfigured ? (
               <>
                 <SignedOut>
