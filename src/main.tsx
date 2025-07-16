@@ -6,12 +6,19 @@ console.log("App starting...");
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-// Unregister any existing service workers to prevent fetch interference
+// Register service worker for PWA install prompt
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function (registrations) {
-    for (let registration of registrations) {
-      registration.unregister();
-      console.log("Service worker unregistered:", registration);
-    }
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log(
+          "Service Worker registered with scope:",
+          registration.scope
+        );
+      })
+      .catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
   });
 }
