@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import Lenis from 'lenis';
 
 console.log("App starting...");
 
@@ -22,3 +23,15 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+
+// Initialize Lenis for smooth scrolling
+const lenis = new Lenis({
+  duration: 1.2,
+  touchMultiplier: 2,
+});
+
+function raf(time: number) {
+  lenis.raf(time);
+  requestAnimationFrame(raf);
+}
+requestAnimationFrame(raf);

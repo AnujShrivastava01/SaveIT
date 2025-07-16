@@ -2,7 +2,7 @@ import { Github, Linkedin, Heart, Code, Coffee } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900/95 via-slate-800/90 to-slate-900/95 border-t border-purple-500/20 backdrop-blur-lg relative overflow-hidden z-30 shadow-2xl shadow-purple-500/10">
+    <footer className="bg-gradient-to-r from-slate-900/95 via-slate-800/90 to-slate-900/95 border-t border-purple-500/20 backdrop-blur-lg relative overflow-hidden z-30 shadow-2xl shadow-purple-500/10">
       {/* Background Animation */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/8 to-blue-500/10 animate-pulse"></div>
 

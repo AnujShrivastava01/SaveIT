@@ -36,13 +36,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { useDatabase } from "@/hooks/useDatabase";
-import Header from "@/components/Header";
+import Navbar from '@/components/Navbar';
 import Footer from "@/components/Footer";
 import SignInPage from "@/components/SignInPage";
 import Preloader from "@/components/Preloader";
 import { SavedItem } from "@/utils/supabase";
+import { useTheme } from "../contexts/ThemeContext";
+import { motion } from 'framer-motion';
+import gsap from 'gsap';
 
 const defaultCategories = [
   { name: "Coding", icon: Code, color: "bg-blue-500" },
@@ -166,6 +169,7 @@ const Index = () => {
     type: "link" as "link" | "text",
     custom_image: "",
   });
+  const { theme } = useTheme();
 
   // Persist categories to localStorage whenever they change
   useEffect(() => {
@@ -293,7 +297,7 @@ const Index = () => {
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ??
             false) ||
-          item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.tags.some((tag) =>
             tag.toLowerCase().includes(searchQuery.toLowerCase())
           ));
@@ -301,27 +305,99 @@ const Index = () => {
     return match;
   });
 
+  // GSAP demo: pulse heading color on hover
+  const headingRef = React.useRef<HTMLHeadingElement>(null);
+  const handleHeadingHover = () => {
+    if (headingRef.current) {
+      gsap.fromTo(
+        headingRef.current,
+        { color: theme === 'dark' ? '#fff' : '#232b39' },
+        { color: '#a855f7', duration: 0.5, yoyo: true, repeat: 1, onComplete: () => {
+          gsap.to(headingRef.current, { color: theme === 'dark' ? '#fff' : '#232b39', duration: 0.5 });
+        } }
+      );
+    }
+  };
   return (
     <>
       <Preloader />
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+      <div
+        className={
+          `relative overflow-x-hidden min-h-screen ` +
+          (theme === 'dark'
+            ? 'bg-gradient-to-br from-[#232b39] to-[#181e29]'
+            : 'bg-gradient-to-br from-white via-blue-50 to-pink-100')
+        }
+      >
         <SignedOut>
           <SignInPage />
         </SignedOut>
 
         <SignedIn>
-          <Header />
+          <Navbar>
+            <div className="flex items-center space-x-2 md:space-x-4 animate-slide-in-right">
+              {/* Google/User icon area from Header */}
+              {import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ? (
+                <>
+                  <SignedOut>
+                    <SignInButton>
+                      <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/25 text-sm md:text-base px-3 md:px-4 py-2">
+                        <span className="relative z-10">Sign In</span>
+                      </Button>
+                    </SignInButton>
+                  </SignedOut>
+                  <SignedIn>
+                    <div className="transform hover:scale-105 transition-transform duration-300">
+                      <UserButton />
+                    </div>
+                  </SignedIn>
+                </>
+              ) : (
+                <Button
+                  disabled
+                  className="bg-gray-500 cursor-not-allowed text-sm md:text-base px-3 md:px-4 py-2">
+                  Auth Disabled
+                </Button>
+              )}
+            </div>
+          </Navbar>
 
-          {/* Main content area with proper scroll */}
-          <div className="flex-1 overflow-y-auto pb-24">
+          {/* Main content area with reduced top padding for fixed navbar */}
+          <div className={
+            'relative overflow-y-auto pb-24 pt-20 min-h-[calc(100vh-80px)] flex flex-col ' +
+            (theme === 'light' ? 'text-charcoal' : 'text-white')
+          }>
+            {/* Animated blurred pastel background for light mode and deep blurred blobs for dark mode */}
+            {theme === 'light' && (
+              <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+                <div className="absolute top-10 left-1/4 w-96 h-96 bg-purple-300/30 rounded-full blur-3xl animate-float-slow" />
+                <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-pink-200/40 rounded-full blur-2xl animate-float-slower" />
+                <div className="absolute top-1/2 right-10 w-72 h-72 bg-blue-200/30 rounded-full blur-2xl animate-float-medium" />
+              </div>
+            )}
+            {/* Remove the dark.jpg overlay and blobs for dark mode */}
+            {theme === 'dark' && null}
             {/* Search and Filters */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 pt-20">
-              <div className="container mx-auto px-4 py-6">
+            <div className={
+              (theme === 'light'
+                ? 'backdrop-blur-xl bg-white/60 border-b border-white/40 shadow-sm'
+                : 'backdrop-blur-sm border-b border-slate-700') +
+              ' px-0 md:px-0 pt-4 pb-6'
+            }>
+              <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center space-x-3">
-                    <h2 className="text-xl font-semibold text-white animate-fade-in">
+                    <motion.h2
+                      ref={headingRef}
+                      className="text-2xl font-bold animate-fade-in cursor-pointer"
+                      style={{ color: theme === 'light' ? '#2D3748' : '#fff' }}
+                      initial={{ opacity: 0, y: -30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8 }}
+                      onMouseEnter={handleHeadingHover}
+                    >
                       My Collection
-                    </h2>
+                    </motion.h2>
                     {loading && (
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-500"></div>
                     )}
@@ -506,7 +582,11 @@ const Index = () => {
                       placeholder="Search your saved items..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 w-full min-w-0"
+                      className={
+                        (theme === 'light'
+                          ? 'pl-10 bg-white/90 border border-slate-300 text-charcoal placeholder-slate-400 w-full min-w-0 shadow-sm'
+                          : 'pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 w-full min-w-0')
+                      }
                     />
                   </div>
                   <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
@@ -517,10 +597,16 @@ const Index = () => {
                       onClick={() => setSelectedCategory("all")}
                       className={
                         selectedCategory === "all"
-                          ? "bg-purple-600 hover:bg-purple-700"
-                          : "border-slate-600 text-slate-300"
+                          ? (theme === 'light'
+                              ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
+                              : 'bg-purple-600 hover:bg-purple-700 shadow-md')
+                          : (theme === 'light'
+                              ? 'border-slate-300 text-charcoal bg-white/90 shadow-md'
+                              : 'border-slate-600 text-slate-300 shadow-md')
                       }>
-                      All
+                      <span className={selectedCategory === "all" && theme === 'light' ? 'text-white' : theme === 'light' ? 'text-charcoal' : 'text-slate-300'}>
+                        All
+                      </span>
                     </Button>
                     {categories.map((category, idx) => (
                       <div
@@ -541,10 +627,44 @@ const Index = () => {
                           }}
                           className={
                             selectedCategory === category.name
-                              ? "bg-purple-600 hover:bg-purple-700 pr-8"
-                              : "border-slate-600 text-slate-300 pr-8"
+                              ? (theme === 'light'
+                                  ? 'bg-purple-600 hover:bg-purple-700 text-white pr-8 shadow-md'
+                                  : category.name === 'Coding'
+                                    ? 'bg-blue-500 hover:bg-blue-600 text-white pr-8 shadow-md'
+                                  : category.name === 'Study'
+                                    ? 'bg-green-500 hover:bg-green-600 text-white pr-8 shadow-md'
+                                  : category.name === 'Personal'
+                                    ? 'bg-pink-500 hover:bg-pink-600 text-white pr-8 shadow-md'
+                                  : category.name === 'Work'
+                                    ? 'bg-orange-400 hover:bg-orange-500 text-white pr-8 shadow-md'
+                                  : 'bg-purple-600 hover:bg-purple-700 text-white pr-8 shadow-md')
+                              : (theme === 'light'
+                                  ? 'border-slate-300 text-charcoal bg-white/90 pr-8 shadow-md'
+                                  : category.name === 'Coding'
+                                    ? 'bg-slate-800 border-blue-400 text-blue-300 pr-8 shadow-md'
+                                    : category.name === 'Study'
+                                      ? 'bg-slate-800 border-green-400 text-green-300 pr-8 shadow-md'
+                                      : category.name === 'Personal'
+                                        ? 'bg-slate-800 border-pink-400 text-pink-300 pr-8 shadow-md'
+                                        : category.name === 'Work'
+                                          ? 'bg-slate-800 border-orange-300 text-orange-200 pr-8 shadow-md'
+                                          : 'bg-slate-800 border-purple-400 text-purple-300 pr-8 shadow-md')
                           }>
-                          <category.icon className="w-3 h-3 mr-1" />
+                          <category.icon className={
+                            selectedCategory === category.name
+                              ? 'w-3 h-3 mr-1 text-white'
+                              : theme === 'light'
+                                ? 'w-3 h-3 mr-1 text-charcoal'
+                                : category.name === 'Coding'
+                                  ? 'w-3 h-3 mr-1 text-blue-300'
+                                  : category.name === 'Study'
+                                    ? 'w-3 h-3 mr-1 text-green-300'
+                                    : category.name === 'Personal'
+                                      ? 'w-3 h-3 mr-1 text-pink-300'
+                                      : category.name === 'Work'
+                                        ? 'w-3 h-3 mr-1 text-orange-200'
+                                        : 'w-3 h-3 mr-1 text-purple-300'
+                          } />
                           {category.name}
                         </Button>
                         {/* Show delete for every folder except 'All' */}
@@ -682,14 +802,18 @@ const Index = () => {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {filtered.length === 0 ? (
-                    <div className="text-center py-12 animate-fade-in">
+                    <div className="flex flex-1 items-center justify-center min-h-[60vh] w-full">
+                      <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
                       <div className="w-24 h-24 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
                         <BookOpen className="w-12 h-12 text-slate-400" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">
+                        <h3 className={
+                          'text-xl font-semibold mb-2 ' +
+                          (theme === 'light' ? 'text-charcoal' : 'text-white')
+                        }>
                         No items found
                       </h3>
-                      <p className="text-slate-400 mb-6">
+                        <p className="text-slate-400 mb-6 text-center">
                         {searchQuery || selectedCategory !== "all"
                           ? "No items match your current filters"
                           : "Start by adding your first link or note"}
@@ -700,12 +824,18 @@ const Index = () => {
                         <Plus className="w-4 h-4 mr-2" />
                         Add Your First Item
                       </Button>
+                      </div>
                     </div>
                   ) : (
                     filtered.map((item, index) => (
                       <Card
                         key={item.id}
-                        className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass"
+                        className={
+                          (theme === 'light'
+                            ? 'bg-white/70 border border-white/60 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl text-charcoal'
+                            : 'bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass text-white')
+                          + ' rounded-xl'
+                        }
                         style={{ animationDelay: `${index * 100}ms` }}>
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between">
@@ -713,7 +843,9 @@ const Index = () => {
                               {item.is_pinned && (
                                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
                               )}
-                              <CardTitle className="flex items-center gap-2 text-white text-sm font-medium truncate">
+                              <CardTitle className={
+                                (theme === 'light' ? 'flex items-center gap-2 text-charcoal text-sm font-medium truncate' : 'flex items-center gap-2 text-white text-sm font-medium truncate')
+                              }>
                                 {getIconForItem(item)}
                                 {item.title}
                               </CardTitle>
@@ -753,7 +885,9 @@ const Index = () => {
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">
-                          <p className="text-slate-300 text-sm mb-3 line-clamp-2">
+                          <p className={
+                            (theme === 'light' ? 'text-slate-700 text-sm mb-3 line-clamp-2' : 'text-slate-300 text-sm mb-3 line-clamp-2')
+                          }>
                             {item.description ||
                               (item.type === "link"
                                 ? "No description"
@@ -821,7 +955,10 @@ const Index = () => {
               <div className="py-16 text-center animate-fade-in">
                 <div className="space-y-6">
                   <div className="relative">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                    <h2 className={
+                      'text-4xl md:text-5xl font-bold mb-4 ' +
+                      (theme === 'light' ? 'text-charcoal' : 'text-white')
+                    }>
                       Welcome to Your
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                         {" "}
@@ -831,7 +968,10 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl -z-10"></div>
                   </div>
 
-                  <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+                  <p className={
+                    'text-xl max-w-2xl mx-auto ' +
+                    (theme === 'light' ? 'text-slate-700' : 'text-slate-300')
+                  }>
                     Organize your links, save important notes, and access
                     everything in one beautiful place.
                   </p>
