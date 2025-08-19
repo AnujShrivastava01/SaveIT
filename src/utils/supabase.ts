@@ -23,6 +23,7 @@ export const supabase = isSupabaseConfigured
 export const TABLES = {
   SAVED_ITEMS: "saved_items",
   USER_PROFILES: "user_profiles",
+  CUSTOM_FOLDERS: "custom_folders",
 };
 
 // Types for TypeScript
@@ -47,6 +48,16 @@ export interface UserProfile {
   email: string;
   name?: string;
   avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CustomFolder {
+  id: string;
+  user_id: string;
+  name: string;
+  icon: string;
+  color: string;
   created_at: string;
   updated_at: string;
 }

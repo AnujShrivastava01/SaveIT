@@ -42,7 +42,7 @@ import Navbar from '@/components/Navbar';
 import Footer from "@/components/Footer";
 import SignInPage from "@/components/SignInPage";
 import Preloader from "@/components/Preloader";
-import { SavedItem } from "@/utils/supabase";
+import { SavedItem, CustomFolder } from "@/utils/supabase";
 import { useTheme } from "../contexts/ThemeContext";
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
@@ -54,7 +54,7 @@ const defaultCategories = [
   { name: "Work", icon: Folder, color: "bg-orange-500" },
 ];
 
-const CATEGORIES_KEY = "saveit_categories";
+// No longer needed since we're using database for custom folders
 
 // Utility function to extract domain from a URL
 function getDomain(url: string) {
@@ -111,12 +111,15 @@ function getIconForItem(item: SavedItem) {
 const Index = () => {
   const {
     items,
+    customFolders,
     loading,
     addItem,
     deleteItem,
     togglePin,
     loadItems,
     updateItem,
+    addCustomFolder,
+    deleteCustomFolder,
   } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -130,30 +133,17 @@ const Index = () => {
     type: "link" as "link" | "text",
     custom_image: "",
   });
-  const [categories, setCategories] = useState(() => {
-    const stored = localStorage.getItem(CATEGORIES_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        // Restore icon functions
-        return parsed.map((cat: any) => {
-          let icon = Folder;
-          if (cat.icon && typeof cat.icon === "string") {
-            if (cat.icon === "Code") icon = Code;
-            else if (cat.icon === "BookOpen") icon = BookOpen;
-            else if (cat.icon === "Heart") icon = Heart;
-            else if (cat.icon === "Folder") icon = Folder;
-          } else if (cat.icon) {
-            icon = cat.icon;
-          }
-          return { ...cat, icon };
-        });
-      } catch {
-        return defaultCategories;
-      }
-    }
-    return defaultCategories;
-  });
+  // Combine default categories with custom folders
+  const allCategories = [
+    ...defaultCategories.map(cat => ({ ...cat, isCustom: false, id: undefined })),
+    ...customFolders.map(folder => ({
+      name: folder.name,
+      icon: Folder, // Default to Folder icon for custom folders
+      color: folder.color,
+      isCustom: true,
+      id: folder.id
+    }))
+  ];
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
@@ -171,13 +161,7 @@ const Index = () => {
   });
   const { theme } = useTheme();
 
-  // Persist categories to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(
-      CATEGORIES_KEY,
-      JSON.stringify(categories.map((cat) => ({ ...cat, icon: cat.icon.name })))
-    );
-  }, [categories]);
+  // No longer need localStorage persistence since we're using database
 
   const handleAddItem = async () => {
     if (!newItem.title || !newItem.content) {
@@ -189,8 +173,7 @@ const Index = () => {
       return;
     }
 
-    console.log("Selected category when adding:", selectedCategory);
-    console.log("newItem.category when adding:", newItem.category);
+
 
     try {
       await addItem({
@@ -273,15 +256,6 @@ const Index = () => {
 
   // Define filtered before the JSX return
   const filtered = items.filter((item) => {
-    // Debug log
-    console.log(
-      "Item:",
-      item.title,
-      "| item.category:",
-      item.category,
-      "| selectedCategory:",
-      selectedCategory
-    );
     let match = true;
     if (selectedCategory !== "all") {
       match =
@@ -415,7 +389,7 @@ const Index = () => {
                             category:
                               selectedCategory !== "all"
                                 ? selectedCategory
-                                : categories[0]?.name || "Coding",
+                                : allCategories[0]?.name || "Coding",
                           }));
                         }}>
                         <Plus className="w-4 h-4 mr-2" />
@@ -483,7 +457,7 @@ const Index = () => {
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent className="bg-slate-700 border-slate-600">
-                                {categories.map((cat) => (
+                                {allCategories.map((cat) => (
                                   <SelectItem key={cat.name} value={cat.name}>
                                     {cat.name}
                                   </SelectItem>
@@ -608,7 +582,7 @@ const Index = () => {
                         All
                       </span>
                     </Button>
-                    {categories.map((category, idx) => (
+                                            {allCategories.map((category, idx) => (
                       <div
                         key={category.name}
                         className="relative group inline-block">
@@ -693,7 +667,7 @@ const Index = () => {
                           Are you sure you want to delete the folder{" "}
                           <b>
                             {confirmDeleteIdx !== null
-                              ? categories[confirmDeleteIdx]?.name
+                              ? allCategories[confirmDeleteIdx]?.name
                               : ""}
                           </b>
                           ? This cannot be undone.
@@ -709,12 +683,11 @@ const Index = () => {
                             onClick={() => {
                               if (confirmDeleteIdx !== null) {
                                 const delName =
-                                  categories[confirmDeleteIdx].name;
-                                setCategories(
-                                  categories.filter(
-                                    (_, i) => i !== confirmDeleteIdx
-                                  )
-                                );
+                                  allCategories[confirmDeleteIdx].name;
+                                // For custom folders, delete from database
+                                if (allCategories[confirmDeleteIdx].isCustom) {
+                                  deleteCustomFolder(allCategories[confirmDeleteIdx].id);
+                                }
                                 if (selectedCategory === delName)
                                   setSelectedCategory("all");
                                 setConfirmDeleteIdx(null);
@@ -757,27 +730,28 @@ const Index = () => {
                               Cancel
                             </Button>
                             <Button
-                              onClick={() => {
-                                if (
-                                  newFolderName.trim() &&
-                                  !categories.some(
-                                    (cat) =>
-                                      cat.name.toLowerCase() ===
-                                      newFolderName.trim().toLowerCase()
-                                  )
-                                ) {
-                                  setCategories([
-                                    ...categories,
-                                    {
-                                      name: newFolderName.trim(),
-                                      icon: Folder,
-                                      color: "bg-gray-500",
-                                    },
-                                  ]);
+                                                          onClick={async () => {
+                              if (
+                                newFolderName.trim() &&
+                                !allCategories.some(
+                                  (cat) =>
+                                    cat.name.toLowerCase() ===
+                                    newFolderName.trim().toLowerCase()
+                                )
+                              ) {
+                                try {
+                                  await addCustomFolder({
+                                    name: newFolderName.trim(),
+                                    icon: "Folder",
+                                    color: "bg-gray-500",
+                                  });
                                   setNewFolderName("");
                                   setShowAddFolder(false);
+                                } catch (error) {
+                                  // Error is handled in the hook
                                 }
-                              }}
+                              }
+                            }}
                               className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
                               Add
                             </Button>
@@ -1092,7 +1066,7 @@ const Index = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-700 border-slate-600">
-                    {categories.map((cat) => (
+                    {allCategories.map((cat) => (
                       <SelectItem key={cat.name} value={cat.name}>
                         {cat.name}
                       </SelectItem>

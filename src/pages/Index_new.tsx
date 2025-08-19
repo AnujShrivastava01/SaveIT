@@ -37,9 +37,9 @@ import { useDatabase } from "@/hooks/useDatabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SignInPage from "@/components/SignInPage";
-import { SavedItem } from "@/utils/supabase";
+import { SavedItem, CustomFolder } from "@/utils/supabase";
 
-const categories = [
+const defaultCategories = [
   { name: "Coding", icon: Code, color: "bg-blue-500" },
   { name: "Study", icon: BookOpen, color: "bg-green-500" },
   { name: "Personal", icon: Heart, color: "bg-pink-500" },
@@ -47,11 +47,21 @@ const categories = [
 ];
 
 const Index = () => {
-  const { items, loading, addItem, deleteItem, togglePin } = useDatabase();
+  const { 
+    items, 
+    customFolders, 
+    loading, 
+    addItem, 
+    deleteItem, 
+    togglePin, 
+    addCustomFolder,
+    deleteCustomFolder 
+  } = useDatabase();
   const [filteredItems, setFilteredItems] = useState<SavedItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAddFolderDialogOpen, setIsAddFolderDialogOpen] = useState(false);
   const [newItem, setNewItem] = useState({
     title: "",
     content: "",
@@ -60,7 +70,21 @@ const Index = () => {
     category: "Coding",
     type: "link" as "link" | "text",
   });
+  const [newFolderName, setNewFolderName] = useState("");
+  const [confirmDeleteFolder, setConfirmDeleteFolder] = useState<string | null>(null);
   const { toast } = useToast();
+
+  // Combine default categories with custom folders
+  const allCategories = [
+    ...defaultCategories,
+    ...customFolders.map(folder => ({
+      name: folder.name,
+      icon: Folder, // Default to Folder icon for custom folders
+      color: folder.color,
+      isCustom: true,
+      id: folder.id
+    }))
+  ];
 
   // Update filtered items when items change
   useEffect(() => {
@@ -124,6 +148,56 @@ const Index = () => {
     }
   };
 
+  const handleAddFolder = async () => {
+    if (!newFolderName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a folder name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if folder name already exists
+    const existingFolder = allCategories.find(
+      cat => cat.name.toLowerCase() === newFolderName.trim().toLowerCase()
+    );
+
+    if (existingFolder) {
+      toast({
+        title: "Error",
+        description: "A folder with this name already exists",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await addCustomFolder({
+        name: newFolderName.trim(),
+        icon: "Folder",
+        color: "bg-gray-500",
+      });
+
+      setNewFolderName("");
+      setIsAddFolderDialogOpen(false);
+    } catch (error) {
+      // Error is already handled in the hook
+    }
+  };
+
+  const handleDeleteFolder = async (folderId: string, folderName: string) => {
+    try {
+      await deleteCustomFolder(folderId);
+      if (selectedCategory === folderName) {
+        setSelectedCategory("all");
+      }
+      setConfirmDeleteFolder(null);
+    } catch (error) {
+      // Error is already handled in the hook
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <SignedOut>
@@ -146,124 +220,163 @@ const Index = () => {
                 )}
               </div>
 
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 animate-scale-in">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Item
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-slate-800 border-slate-700 text-white">
-                  <DialogHeader>
-                    <DialogTitle>Add New Item</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="title">Title</Label>
+              <div className="flex space-x-2">
+                <Dialog open={isAddFolderDialogOpen} onOpenChange={setIsAddFolderDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="border-slate-600 text-slate-300"
+                      onClick={() => setIsAddFolderDialogOpen(true)}>
+                      + Add Folder
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                    <DialogHeader>
+                      <DialogTitle>Add New Folder</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
                       <Input
-                        id="title"
-                        value={newItem.title}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, title: e.target.value })
-                        }
-                        placeholder="Enter title..."
+                        placeholder="Folder name"
+                        value={newFolderName}
+                        onChange={(e) => setNewFolderName(e.target.value)}
                         className="bg-slate-700 border-slate-600"
                       />
-                    </div>
-                    <div>
-                      <Label htmlFor="content">Content/URL</Label>
-                      <Textarea
-                        id="content"
-                        value={newItem.content}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, content: e.target.value })
-                        }
-                        placeholder="Enter URL or content..."
-                        className="bg-slate-700 border-slate-600"
-                        rows={4}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        value={newItem.description}
-                        onChange={(e) =>
-                          setNewItem({
-                            ...newItem,
-                            description: e.target.value,
-                          })
-                        }
-                        placeholder="Enter description..."
-                        className="bg-slate-700 border-slate-600"
-                        rows={3}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Select
-                          value={newItem.category}
-                          onValueChange={(value) =>
-                            setNewItem({ ...newItem, category: value })
-                          }>
-                          <SelectTrigger className="bg-slate-700 border-slate-600">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-700 border-slate-600">
-                            {categories.map((cat) => (
-                              <SelectItem key={cat.name} value={cat.name}>
-                                {cat.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="type">Type</Label>
-                        <Select
-                          value={newItem.type}
-                          onValueChange={(value: "link" | "text") =>
-                            setNewItem({ ...newItem, type: value })
-                          }>
-                          <SelectTrigger className="bg-slate-700 border-slate-600">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-700 border-slate-600">
-                            <SelectItem value="link">Link</SelectItem>
-                            <SelectItem value="text">Text</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsAddFolderDialogOpen(false)}
+                          className="border-slate-600 text-slate-300">
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleAddFolder}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                          Add
+                        </Button>
                       </div>
                     </div>
-                    <div>
-                      <Label htmlFor="tags">Tags (comma-separated)</Label>
-                      <Input
-                        id="tags"
-                        value={newItem.tags}
-                        onChange={(e) =>
-                          setNewItem({ ...newItem, tags: e.target.value })
-                        }
-                        placeholder="react, javascript, tutorial"
-                        className="bg-slate-700 border-slate-600"
-                      />
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 animate-scale-in">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Item
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                    <DialogHeader>
+                      <DialogTitle>Add New Item</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="title">Title</Label>
+                        <Input
+                          id="title"
+                          value={newItem.title}
+                          onChange={(e) =>
+                            setNewItem({ ...newItem, title: e.target.value })
+                          }
+                          placeholder="Enter title..."
+                          className="bg-slate-700 border-slate-600"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="content">Content/URL</Label>
+                        <Textarea
+                          id="content"
+                          value={newItem.content}
+                          onChange={(e) =>
+                            setNewItem({ ...newItem, content: e.target.value })
+                          }
+                          placeholder="Enter URL or content..."
+                          className="bg-slate-700 border-slate-600"
+                          rows={4}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          value={newItem.description}
+                          onChange={(e) =>
+                            setNewItem({
+                              ...newItem,
+                              description: e.target.value,
+                            })
+                          }
+                          placeholder="Enter description..."
+                          className="bg-slate-700 border-slate-600"
+                          rows={3}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="category">Category</Label>
+                          <Select
+                            value={newItem.category}
+                            onValueChange={(value) =>
+                              setNewItem({ ...newItem, category: value })
+                            }>
+                            <SelectTrigger className="bg-slate-700 border-slate-600">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-700 border-slate-600">
+                              {allCategories.map((cat) => (
+                                <SelectItem key={cat.name} value={cat.name}>
+                                  {cat.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="type">Type</Label>
+                          <Select
+                            value={newItem.type}
+                            onValueChange={(value: "link" | "text") =>
+                              setNewItem({ ...newItem, type: value })
+                            }>
+                            <SelectTrigger className="bg-slate-700 border-slate-600">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-slate-700 border-slate-600">
+                              <SelectItem value="link">Link</SelectItem>
+                              <SelectItem value="text">Text</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="tags">Tags (comma-separated)</Label>
+                        <Input
+                          id="tags"
+                          value={newItem.tags}
+                          onChange={(e) =>
+                            setNewItem({ ...newItem, tags: e.target.value })
+                          }
+                          placeholder="react, javascript, tutorial"
+                          className="bg-slate-700 border-slate-600"
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setIsAddDialogOpen(false)}
+                          className="border-slate-600 text-slate-300">
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleAddItem}
+                          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                          Save Item
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsAddDialogOpen(false)}
-                        className="border-slate-600 text-slate-300">
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleAddItem}
-                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
-                        Save Item
-                      </Button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             {/* Search and Category Filter */}
@@ -288,26 +401,68 @@ const Index = () => {
                   }>
                   All
                 </Button>
-                {categories.map((category) => (
-                  <Button
-                    key={category.name}
-                    variant={
-                      selectedCategory === category.name ? "default" : "outline"
-                    }
-                    onClick={() => setSelectedCategory(category.name)}
-                    className={
-                      selectedCategory === category.name
-                        ? "bg-purple-600 hover:bg-purple-700"
-                        : "border-slate-600 text-slate-300"
-                    }>
-                    <category.icon className="w-3 h-3 mr-1" />
-                    {category.name}
-                  </Button>
+                {allCategories.map((category) => (
+                  <div key={category.name} className="flex items-center">
+                    <Button
+                      variant={
+                        selectedCategory === category.name ? "default" : "outline"
+                      }
+                      onClick={() => setSelectedCategory(category.name)}
+                      className={
+                        selectedCategory === category.name
+                          ? "bg-purple-600 hover:bg-purple-700"
+                          : "border-slate-600 text-slate-300"
+                      }>
+                      <category.icon className="w-3 h-3 mr-1" />
+                      {category.name}
+                    </Button>
+                    {category.isCustom && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConfirmDeleteFolder(category.id)}
+                        className="h-8 w-8 p-0 text-slate-400 hover:text-red-400 ml-1">
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </div>
+
+        {/* Confirm Delete Folder Dialog */}
+        <Dialog open={!!confirmDeleteFolder} onOpenChange={() => setConfirmDeleteFolder(null)}>
+          <DialogContent className="bg-slate-800 border-slate-700 text-white">
+            <DialogHeader>
+              <DialogTitle>Delete Folder</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <p>Are you sure you want to delete this folder? This action cannot be undone.</p>
+              <div className="flex justify-end space-x-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setConfirmDeleteFolder(null)}
+                  className="border-slate-600 text-slate-300">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (confirmDeleteFolder) {
+                      const folder = allCategories.find(cat => cat.id === confirmDeleteFolder);
+                      if (folder) {
+                        handleDeleteFolder(confirmDeleteFolder, folder.name);
+                      }
+                    }
+                  }}
+                  className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600">
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Items Grid */}
         <div className="container mx-auto px-2 sm:px-4 py-8 w-full">

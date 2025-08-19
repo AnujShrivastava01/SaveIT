@@ -1,4 +1,4 @@
-import { supabase, TABLES, SavedItem, UserProfile } from "../utils/supabase";
+import { supabase, TABLES, SavedItem, UserProfile, CustomFolder } from "../utils/supabase";
 
 // Helper function to check if Supabase is configured
 const checkSupabaseConfig = () => {
@@ -41,8 +41,6 @@ export const createUserProfile = async (
 export const getUserProfile = async (clerkUserId: string) => {
   checkSupabaseConfig();
 
-  console.log("Getting profile for clerk user:", clerkUserId);
-
   const { data, error } = await supabase!
     .from(TABLES.USER_PROFILES)
     .select("*")
@@ -50,10 +48,8 @@ export const getUserProfile = async (clerkUserId: string) => {
     .single();
 
   if (error) {
-    console.log("Get profile error:", error);
     throw error;
   }
-  console.log("Profile found:", data);
   return data;
 };
 
@@ -125,7 +121,7 @@ export const updateSavedItem = async (
 ) => {
   checkSupabaseConfig();
 
-  console.log("Updating item:", itemId, "with updates:", updates);
+
 
   const { data, error } = await supabase!
     .from(TABLES.SAVED_ITEMS)
@@ -138,11 +134,9 @@ export const updateSavedItem = async (
     .single();
 
   if (error) {
-    console.error("Error updating item:", error);
-    console.error("Full error details:", JSON.stringify(error, null, 2));
+    console.error("Error updating item");
     throw error;
   }
-  console.log("Update successful:", data);
   return data;
 };
 
@@ -187,4 +181,101 @@ export const getItemsByCategory = async (userId: string, category: string) => {
 
   if (error) throw error;
   return data;
+};
+
+// Custom Folders Functions
+export const createCustomFolder = async (
+  clerkUserId: string,
+  folder: { name: string; icon?: string; color?: string }
+) => {
+  checkSupabaseConfig();
+
+  // First, get or create the user profile
+  let userProfile;
+  try {
+    userProfile = await getUserProfile(clerkUserId);
+  } catch (error) {
+    // If profile doesn't exist, create it
+    userProfile = await createUserProfile(
+      clerkUserId,
+      `user-${clerkUserId}@clerk.app`,
+      "User"
+    );
+  }
+
+  const insertData = {
+    user_id: userProfile.id,
+    name: folder.name,
+    icon: folder.icon || "Folder",
+    color: folder.color || "bg-gray-500",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase!
+    .from(TABLES.CUSTOM_FOLDERS)
+    .insert([insertData])
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating custom folder");
+    throw error;
+  }
+
+  return data;
+};
+
+export const getUserCustomFolders = async (clerkUserId: string) => {
+  checkSupabaseConfig();
+
+  // First, get the user profile
+  let userProfile;
+  try {
+    userProfile = await getUserProfile(clerkUserId);
+  } catch (error) {
+    // If profile doesn't exist, return empty array
+    return [];
+  }
+
+  const { data, error } = await supabase!
+    .from(TABLES.CUSTOM_FOLDERS)
+    .select("*")
+    .eq("user_id", userProfile.id)
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateCustomFolder = async (
+  folderId: string,
+  updates: { name?: string; icon?: string; color?: string }
+) => {
+  checkSupabaseConfig();
+
+  const { data, error } = await supabase!
+    .from(TABLES.CUSTOM_FOLDERS)
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", folderId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const deleteCustomFolder = async (folderId: string) => {
+  checkSupabaseConfig();
+
+  const { error } = await supabase!
+    .from(TABLES.CUSTOM_FOLDERS)
+    .delete()
+    .eq("id", folderId);
+
+  if (error) throw error;
+  return true;
 };

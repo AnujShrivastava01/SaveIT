@@ -10,8 +10,12 @@ import {
   getItemsByCategory,
   createUserProfile,
   getUserProfile,
+  createCustomFolder,
+  getUserCustomFolders,
+  updateCustomFolder,
+  deleteCustomFolder,
 } from "../services/database";
-import { SavedItem, supabase } from "../utils/supabase";
+import { SavedItem, CustomFolder, supabase } from "../utils/supabase";
 import { useToast } from "./use-toast";
 import { mockDatabase } from "../services/mockDatabase";
 
@@ -19,6 +23,7 @@ export const useDatabase = () => {
   const { user } = useUser();
   const { toast } = useToast();
   const [items, setItems] = useState<SavedItem[]>([]);
+  const [customFolders, setCustomFolders] = useState<CustomFolder[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +32,7 @@ export const useDatabase = () => {
     if (user) {
       initializeUser();
       loadItems();
+      loadCustomFolders();
     }
   }, [user]);
 
@@ -74,6 +80,23 @@ export const useDatabase = () => {
       console.error("Error loading items:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCustomFolders = async () => {
+    if (!user) return;
+
+    try {
+      if (!supabase) {
+        // In demo mode, return empty array for custom folders
+        setCustomFolders([]);
+      } else {
+        const data = await getUserCustomFolders(user.id);
+        setCustomFolders(data || []);
+      }
+    } catch (err) {
+      console.error("Error loading custom folders:", err);
+      setCustomFolders([]);
     }
   };
 
@@ -259,8 +282,106 @@ export const useDatabase = () => {
     }
   };
 
+  // Custom Folder Functions
+  const addCustomFolder = async (folder: { name: string; icon?: string; color?: string }) => {
+    if (!user) return;
+
+    try {
+      if (!supabase) {
+        toast({
+          title: "Demo Mode",
+          description: "Custom folders not available in demo mode",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const newFolder = await createCustomFolder(user.id, folder);
+      setCustomFolders((prev) => [...prev, newFolder]);
+      toast({
+        title: "Success",
+        description: "Custom folder created successfully!",
+      });
+      return newFolder;
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to create custom folder",
+        variant: "destructive",
+      });
+      console.error("Error creating custom folder:", err);
+      throw err;
+    }
+  };
+
+  const updateCustomFolderLocal = async (folderId: string, updates: { name?: string; icon?: string; color?: string }) => {
+    if (!user) return;
+
+    try {
+      if (!supabase) {
+        toast({
+          title: "Demo Mode",
+          description: "Custom folders not available in demo mode",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const updatedFolder = await updateCustomFolder(folderId, updates);
+      setCustomFolders((prev) =>
+        prev.map((folder) =>
+          folder.id === folderId ? { ...folder, ...updatedFolder } : folder
+        )
+      );
+      toast({
+        title: "Success",
+        description: "Custom folder updated successfully!",
+      });
+      return updatedFolder;
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to update custom folder",
+        variant: "destructive",
+      });
+      console.error("Error updating custom folder:", err);
+      throw err;
+    }
+  };
+
+  const deleteCustomFolderLocal = async (folderId: string) => {
+    if (!user) return;
+
+    try {
+      if (!supabase) {
+        toast({
+          title: "Demo Mode",
+          description: "Custom folders not available in demo mode",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      await deleteCustomFolder(folderId);
+      setCustomFolders((prev) => prev.filter((folder) => folder.id !== folderId));
+      toast({
+        title: "Success",
+        description: "Custom folder deleted successfully!",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to delete custom folder",
+        variant: "destructive",
+      });
+      console.error("Error deleting custom folder:", err);
+      throw err;
+    }
+  };
+
   return {
     items,
+    customFolders,
     loading,
     error,
     addItem,
@@ -269,6 +390,9 @@ export const useDatabase = () => {
     togglePin,
     searchItems,
     getByCategory,
+    addCustomFolder,
+    updateCustomFolder: updateCustomFolderLocal,
+    deleteCustomFolder: deleteCustomFolderLocal,
     refreshItems: loadItems,
     loadItems, // Export loadItems so it can be called externally
   };
