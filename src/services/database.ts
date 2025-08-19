@@ -32,7 +32,7 @@ export const createUserProfile = async (
     .single();
 
   if (error) {
-    console.error("Error creating user profile:", error);
+    console.error("Error creating user profile");
     throw error;
   }
   return data;
@@ -87,7 +87,7 @@ export const createSavedItem = async (
     .single();
 
   if (error) {
-    console.error("Supabase error:", error);
+    console.error("Supabase error");
     throw error;
   }
   return data;

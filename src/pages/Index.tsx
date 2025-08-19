@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -100,6 +101,10 @@ function getIconForItem(item: SavedItem) {
         alt={domain}
         className="w-5 h-5 rounded"
         style={{ background: "#fff" }}
+        onError={(e) => {
+          // Hide the image on error to prevent 404 console errors
+          e.currentTarget.style.display = "none";
+        }}
       />
     );
   }
@@ -396,9 +401,12 @@ const Index = () => {
                         Add Item
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                    <DialogContent className="bg-slate-800 border-slate-700 text-white" aria-describedby="add-item-description">
                       <DialogHeader>
                         <DialogTitle>Add New Item</DialogTitle>
+                        <DialogDescription id="add-item-description">
+                          Add a new item to your collection. Fill in the details below.
+                        </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
@@ -711,9 +719,12 @@ const Index = () => {
                           + Add Folder
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                      <DialogContent className="bg-slate-800 border-slate-700 text-white" aria-describedby="add-folder-description">
                         <DialogHeader>
                           <DialogTitle>Add New Folder</DialogTitle>
+                          <DialogDescription id="add-folder-description">
+                            Create a new custom folder to organize your items.
+                          </DialogDescription>
                         </DialogHeader>
                         <div className="space-y-4">
                           <Input
@@ -972,9 +983,12 @@ const Index = () => {
       </div>
       <Footer />
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+        <DialogContent className="bg-slate-800 border-slate-700 text-white" aria-describedby="edit-item-description">
           <DialogHeader>
             <DialogTitle>Edit Item</DialogTitle>
+            <DialogDescription id="edit-item-description">
+              Modify the details of your saved item.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>

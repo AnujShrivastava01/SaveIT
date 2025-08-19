@@ -33,7 +33,7 @@ const Navbar = ({ children, transparent = false }: NavbarProps) => {
               <path d="M8 0L9.2 4.2L13.5 5L9.2 5.8L8 10L6.8 5.8L2.5 5L6.8 4.2L8 0Z" fill="#fff700"/>
             </g>
             <defs>
-              <filter id="sparkle-glow" x="-2" y="-2" width="20" height="20" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+              <filter id="sparkle-glow" x="-2" y="-2" width="20" height="20" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
                 <feGaussianBlur stdDeviation="1.5" result="blur"/>
                 <feMerge>
                   <feMergeNode in="blur"/>

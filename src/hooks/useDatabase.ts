@@ -51,7 +51,7 @@ export const useDatabase = () => {
           user.fullName || user.firstName || ""
         );
       } catch (createError) {
-        console.error("Error creating user profile:", createError);
+        console.error("Error creating user profile");
       }
     }
   };
@@ -77,7 +77,7 @@ export const useDatabase = () => {
       }
     } catch (err) {
       setError("Failed to load items");
-      console.error("Error loading items:", err);
+      console.error("Error loading items");
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export const useDatabase = () => {
         setCustomFolders(data || []);
       }
     } catch (err) {
-      console.error("Error loading custom folders:", err);
+      console.error("Error loading custom folders");
       setCustomFolders([]);
     }
   };
@@ -106,13 +106,8 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      console.log("Adding item with user ID:", user.id);
-      console.log("Item data:", item);
-      console.log("Supabase configured:", !!supabase);
-
       // Use mock data if Supabase is not configured
       if (!supabase) {
-        console.log("Using mock database for add");
         const newItem = await mockDatabase.createSavedItem({
           ...item,
           user_id: user.id,
@@ -124,7 +119,6 @@ export const useDatabase = () => {
         });
         return newItem;
       } else {
-        console.log("Using Supabase for add");
         const newItem = await createSavedItem(user.id, item);
         setItems((prev) => [newItem, ...prev]);
         toast({
@@ -134,25 +128,19 @@ export const useDatabase = () => {
         return newItem;
       }
     } catch (err) {
-      console.error("Detailed error:", err);
       toast({
         title: "Error",
         description: "Failed to save item",
         variant: "destructive",
       });
-      console.error("Error adding item:", err);
       throw err;
     }
   };
 
   const updateItem = async (itemId: string, updates: Partial<SavedItem>) => {
     try {
-      console.log("updateItem called with:", { itemId, updates });
-      console.log("Supabase configured:", !!supabase);
-
       // Use mock data if Supabase is not configured
       if (!supabase) {
-        console.log("Using mock database for update");
         const updatedItem = await mockDatabase.updateSavedItem(itemId, updates);
         setItems((prev) =>
           prev.map((item) =>
@@ -165,7 +153,6 @@ export const useDatabase = () => {
         });
         return updatedItem;
       } else {
-        console.log("Using Supabase for update");
         const updatedItem = await updateSavedItem(itemId, updates);
         setItems((prev) =>
           prev.map((item) =>
@@ -179,13 +166,11 @@ export const useDatabase = () => {
         return updatedItem;
       }
     } catch (err) {
-      console.error("Update error in hook:", err);
       toast({
         title: "Error",
         description: "Failed to update item",
         variant: "destructive",
       });
-      console.error("Error updating item:", err);
       throw err;
     }
   };
@@ -214,7 +199,7 @@ export const useDatabase = () => {
         description: "Failed to delete item",
         variant: "destructive",
       });
-      console.error("Error deleting item:", err);
+      console.error("Error deleting item");
       throw err;
     }
   };
@@ -253,7 +238,7 @@ export const useDatabase = () => {
         description: "Failed to update pin status",
         variant: "destructive",
       });
-      console.error("Error toggling pin:", err);
+      console.error("Error toggling pin");
       throw err;
     }
   };
@@ -265,7 +250,7 @@ export const useDatabase = () => {
       const results = await searchSavedItems(user.id, query);
       return results || [];
     } catch (err) {
-      console.error("Error searching items:", err);
+      console.error("Error searching items");
       return [];
     }
   };
@@ -277,7 +262,7 @@ export const useDatabase = () => {
       const results = await getItemsByCategory(user.id, category);
       return results || [];
     } catch (err) {
-      console.error("Error getting items by category:", err);
+      console.error("Error getting items by category");
       return [];
     }
   };
@@ -309,7 +294,7 @@ export const useDatabase = () => {
         description: "Failed to create custom folder",
         variant: "destructive",
       });
-      console.error("Error creating custom folder:", err);
+      console.error("Error creating custom folder");
       throw err;
     }
   };
@@ -344,7 +329,7 @@ export const useDatabase = () => {
         description: "Failed to update custom folder",
         variant: "destructive",
       });
-      console.error("Error updating custom folder:", err);
+      console.error("Error updating custom folder");
       throw err;
     }
   };
@@ -374,7 +359,7 @@ export const useDatabase = () => {
         description: "Failed to delete custom folder",
         variant: "destructive",
       });
-      console.error("Error deleting custom folder:", err);
+      console.error("Error deleting custom folder");
       throw err;
     }
   };
