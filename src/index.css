@@ -581,6 +581,10 @@ html {
   scrollbar-color: #475569 #1e293b;
   overflow-y: auto;
   overflow-x: hidden;
+  /* Ensure smooth scrolling */
+  scroll-behavior: smooth;
+  /* Prevent scroll chaining */
+  overscroll-behavior: contain;
 }
 
 .dialog-scrollable::-webkit-scrollbar {
@@ -600,6 +604,34 @@ html {
 
 .dialog-scrollable::-webkit-scrollbar-thumb:hover {
   background: #64748b;
+}
+
+/* Ensure dialog content is properly scrollable */
+[data-radix-dialog-content] .dialog-scrollable {
+  /* Force scrollbar to be visible when needed */
+  overflow-y: scroll;
+  /* Ensure proper height calculation */
+  max-height: calc(90vh - 120px);
+  /* Add padding for scrollbar */
+  padding-right: 8px;
+}
+
+/* Prevent body scroll when dialog is open */
+[data-radix-dialog-overlay][data-state="open"] ~ body,
+[data-radix-dialog-overlay][data-state="open"] ~ html {
+  overflow: hidden !important;
+}
+
+/* Ensure dialog overlay prevents background interaction */
+[data-radix-dialog-overlay] {
+  overscroll-behavior: contain;
+}
+
+/* Prevent scroll propagation on dialog content */
+[data-radix-dialog-content] {
+  overscroll-behavior: contain !important;
+  /* Prevent scroll chaining to background */
+  isolation: isolate;
 }
 
 /* Ensure dialog content is scrollable */

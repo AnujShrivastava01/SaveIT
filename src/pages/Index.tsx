@@ -692,14 +692,21 @@ const Index = () => {
                         Add Item
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-[95vw] w-[95vw] sm:max-w-lg sm:w-auto max-h-[90vh] overflow-y-auto p-4 sm:p-6 dialog-scrollable" aria-describedby="add-item-description">
-                      <DialogHeader>
+                    <DialogContent 
+                      className="bg-slate-800 border-slate-700 text-white max-w-[95vw] w-[95vw] sm:max-w-lg sm:w-auto max-h-[90vh] overflow-hidden p-4 sm:p-6"
+                      onWheel={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                      aria-describedby="add-item-description">
+                      <DialogHeader className="flex-shrink-0">
                         <DialogTitle>Add New Item</DialogTitle>
                         <DialogDescription id="add-item-description">
                           Add a new item to your collection. Fill in the details below.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-3">
+                      <div 
+                        className="space-y-3 overflow-y-auto max-h-[calc(90vh-120px)] pr-2 dialog-scrollable"
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}>
                         <div>
                           <Label htmlFor="title">Title</Label>
                           <Input
@@ -1062,14 +1069,21 @@ const Index = () => {
                           + Add Folder
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="bg-slate-800 border-slate-700 text-white" aria-describedby="add-folder-description">
-                        <DialogHeader>
+                      <DialogContent 
+                        className="bg-slate-800 border-slate-700 text-white max-h-[90vh] overflow-hidden p-4 sm:p-6"
+                        onWheel={(e) => e.stopPropagation()}
+                        onTouchMove={(e) => e.stopPropagation()}
+                        aria-describedby="add-folder-description">
+                        <DialogHeader className="flex-shrink-0">
                           <DialogTitle>Add New Folder</DialogTitle>
                           <DialogDescription id="add-folder-description">
                             Create a new custom folder to organize your items.
                           </DialogDescription>
                         </DialogHeader>
-                        <div className="space-y-4">
+                        <div 
+                          className="space-y-4 overflow-y-auto max-h-[calc(90vh-120px)] pr-2 dialog-scrollable"
+                          onWheel={(e) => e.stopPropagation()}
+                          onTouchMove={(e) => e.stopPropagation()}>
                           <Input
                             placeholder="Folder name"
                             value={newFolderName}
