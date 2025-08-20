@@ -1658,10 +1658,10 @@ const Index = () => {
                 }>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className={
+                <SelectContentWithScrollbar className={
                   theme === 'light'
-                    ? 'bg-white border border-slate-300 max-h-[200px] overflow-y-auto select-scrollable'
-                    : 'bg-slate-700 border-slate-600 max-h-[200px] overflow-y-auto select-scrollable'
+                    ? 'bg-white border border-slate-300 max-h-[200px]'
+                    : 'bg-slate-700 border-slate-600 max-h-[200px]'
                 }>
                   <SelectItem value="bg-blue-500" className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-blue-500"></div>
@@ -1695,7 +1695,7 @@ const Index = () => {
                     <div className="w-4 h-4 rounded bg-gray-500"></div>
                     <span>Gray</span>
                   </SelectItem>
-                </SelectContent>
+                </SelectContentWithScrollbar>
               </Select>
             </div>
             <div className="flex justify-end space-x-2">
