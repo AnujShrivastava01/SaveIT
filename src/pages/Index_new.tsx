@@ -84,7 +84,13 @@ const Index = () => {
       isCustom: true,
       id: folder.id
     }))
-  ];
+  ] as Array<{
+    name: string;
+    icon: React.ComponentType<{ className?: string }>;
+    color: string;
+    isCustom?: boolean;
+    id?: string;
+  }>;
 
   // Update filtered items when items change
   useEffect(() => {
@@ -230,11 +236,11 @@ const Index = () => {
                       + Add Folder
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-800 border-slate-700 text-white">
-                    <DialogHeader>
-                      <DialogTitle>Add New Folder</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
+                                     <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-[95vw] w-[95vw] sm:max-w-lg sm:w-auto max-h-[90vh] overflow-y-auto p-4 sm:p-6 dialog-scrollable">
+                     <DialogHeader>
+                       <DialogTitle>Add New Folder</DialogTitle>
+                     </DialogHeader>
+                    <div className="space-y-3">
                       <Input
                         placeholder="Folder name"
                         value={newFolderName}
@@ -265,11 +271,11 @@ const Index = () => {
                       Add Item
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                  <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-[95vw] w-[95vw] sm:max-w-lg sm:w-auto max-h-[90vh] overflow-y-auto p-4 sm:p-6 dialog-scrollable">
                     <DialogHeader>
                       <DialogTitle>Add New Item</DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div>
                         <Label htmlFor="title">Title</Label>
                         <Input
@@ -292,7 +298,7 @@ const Index = () => {
                           }
                           placeholder="Enter URL or content..."
                           className="bg-slate-700 border-slate-600"
-                          rows={4}
+                          rows={3}
                         />
                       </div>
                       <div>
@@ -308,10 +314,10 @@ const Index = () => {
                           }
                           placeholder="Enter description..."
                           className="bg-slate-700 border-slate-600"
-                          rows={3}
+                          rows={2}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <Label htmlFor="category">Category</Label>
                           <Select

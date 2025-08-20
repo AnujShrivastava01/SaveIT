@@ -574,3 +574,55 @@ html {
 .dark [data-radix-select-viewport] {
   scrollbar-color: #6b7280 #374151 !important;
 }
+
+/* Dialog scrollbar styling */
+.dialog-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: #475569 #1e293b;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.dialog-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dialog-scrollable::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.dialog-scrollable::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.dialog-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Ensure dialog content is scrollable */
+[data-radix-dialog-content] {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+}
+
+[data-radix-dialog-content]::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+[data-radix-dialog-content]::-webkit-scrollbar-track {
+  background: #1e293b !important;
+  border-radius: 4px !important;
+}
+
+[data-radix-dialog-content]::-webkit-scrollbar-thumb {
+  background: #475569 !important;
+  border-radius: 4px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+[data-radix-dialog-content]::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important;
+}
