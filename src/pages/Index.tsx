@@ -403,6 +403,19 @@ const Index = () => {
   });
   const { theme } = useTheme();
 
+  // Prevent body scroll when dialog is open
+  useEffect(() => {
+    if (isAddDialogOpen || showAddFolder || editDialogOpen || editFolderDialogOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isAddDialogOpen, showAddFolder, editDialogOpen, editFolderDialogOpen]);
+
   // No longer need localStorage persistence since we're using database
 
   const handleAddItem = async () => {
