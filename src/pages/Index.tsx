@@ -324,6 +324,23 @@ function getIconForItem(item: SavedItem) {
   return <Globe className="w-5 h-5 text-slate-400" />;
 }
 
+// Utility function to ensure color classes are properly applied
+const getColorClass = (color: string | undefined) => {
+  if (!color) return 'text-gray-500';
+  
+  // Convert bg- to text- and ensure the class exists
+  const textColor = color.replace('bg-', 'text-');
+  
+  // Safelist of all possible color classes to prevent Tailwind from purging them
+  const colorClasses = [
+    'text-red-500', 'text-pink-500', 'text-purple-500', 'text-blue-500', 'text-cyan-500', 'text-teal-500',
+    'text-green-500', 'text-lime-500', 'text-yellow-500', 'text-orange-500', 'text-gray-500', 'text-slate-500'
+  ];
+  
+  // Return the color if it's in our safelist, otherwise fallback to gray
+  return colorClasses.includes(textColor) ? textColor : 'text-gray-500';
+};
+
 const Index = () => {
   const {
     items,
@@ -907,7 +924,7 @@ const Index = () => {
                                 const category = allCategories.find(cat => cat.name === selectedCategory);
                                 return category ? (
                                   <div className="flex items-center gap-2">
-                                    <category.icon className={`w-4 h-4 ${category.color ? category.color.replace('bg-', 'text-') : 'text-gray-500'}`} />
+                                    <category.icon className={`w-4 h-4 ${getColorClass(category.color)}`} />
                                     <span className="font-medium">{category.name}</span>
                                   </div>
                                 ) : (
@@ -930,18 +947,21 @@ const Index = () => {
                               <span className="font-medium">All Folders</span>
                             </div>
                           </SelectItem>
-                          {allCategories.map((category) => (
-                            <SelectItem 
-                              key={category.name} 
-                              value={category.name}
-                              className="py-2"
-                            >
-                              <div className="flex items-center gap-2">
-                                <category.icon className={`w-4 h-4 ${category.color ? category.color.replace('bg-', 'text-') : 'text-gray-500'}`} />
-                                <span className="font-medium">{category.name}</span>
-                              </div>
-                            </SelectItem>
-                          ))}
+                          {allCategories.map((category) => {
+                            const colorClass = getColorClass(category.color);
+                            return (
+                              <SelectItem 
+                                key={category.name} 
+                                value={category.name}
+                                className="py-2"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <category.icon className={`w-4 h-4 ${colorClass}`} />
+                                  <span className="font-medium">{category.name}</span>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContentWithScrollbar>
                       </Select>
                     </div>
@@ -1098,7 +1118,7 @@ const Index = () => {
                                 )
                               ) {
                                 try {
-                                  await addCustomFolder({
+                                  const result = await addCustomFolder({
                                     name: newFolderName.trim(),
                                     icon: getIconForFolder(newFolderName.trim()).name,
                                     color: selectedFolderColor,
