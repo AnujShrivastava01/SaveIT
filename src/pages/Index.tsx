@@ -98,6 +98,8 @@ import {
   Egg,
   Milk,
   Apple,
+  Grid3X3,
+  List,
   Carrot,
   Pizza,
   Cake,
@@ -133,10 +135,11 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectContentWithScrollbar,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { useDatabase } from "@/hooks/useDatabase";
@@ -337,6 +340,7 @@ const Index = () => {
   } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"cards" | "list">("cards");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newItem, setNewItem] = useState({
     title: "",
@@ -360,6 +364,7 @@ const Index = () => {
   ], [customFolders]);
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
+  const [selectedFolderColor, setSelectedFolderColor] = useState("bg-blue-500");
   const { toast } = useToast();
   const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
   const [editItem, setEditItem] = useState<SavedItem | null>(null);
@@ -840,6 +845,40 @@ const Index = () => {
                       }
                     />
                   </div>
+                  
+                  {/* View Mode Toggle */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant={viewMode === "cards" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("cards")}
+                      className={
+                        viewMode === "cards"
+                          ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                          : theme === 'light'
+                          ? 'border-slate-300 text-charcoal bg-white/90 shadow-md'
+                          : 'border-slate-600 text-slate-300 shadow-md'
+                      }
+                      title="Card view"
+                    >
+                      <Grid3X3 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === "list" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setViewMode("list")}
+                      className={
+                        viewMode === "list"
+                          ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+                          : theme === 'light'
+                          ? 'border-slate-300 text-charcoal bg-white/90 shadow-md'
+                          : 'border-slate-600 text-slate-300 shadow-md'
+                      }
+                      title="List view"
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </div>
                   <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
                     {/* Folder Filter Dropdown */}
                     <div className="relative">
@@ -868,7 +907,7 @@ const Index = () => {
                                 const category = allCategories.find(cat => cat.name === selectedCategory);
                                 return category ? (
                                   <div className="flex items-center gap-2">
-                                    <category.icon className="w-4 h-4" />
+                                    <category.icon className={`w-4 h-4 ${category.color ? category.color.replace('bg-', 'text-') : 'text-gray-500'}`} />
                                     <span className="font-medium">{category.name}</span>
                                   </div>
                                 ) : (
@@ -878,11 +917,13 @@ const Index = () => {
                             )}
                           </SelectValue>
                         </SelectTrigger>
-                        <SelectContent className={
-                          theme === 'light'
-                            ? 'bg-white border border-slate-300'
-                            : 'bg-slate-800 border-slate-600'
-                        }>
+                        <SelectContentWithScrollbar 
+                          className={
+                            theme === 'light'
+                              ? 'bg-white border border-slate-300 max-h-[300px]'
+                              : 'bg-slate-800 border-slate-600 max-h-[300px]'
+                          }
+                        >
                           <SelectItem value="all" className="py-2">
                             <div className="flex items-center gap-2">
                               <Folder className="w-4 h-4 text-purple-500" />
@@ -896,12 +937,12 @@ const Index = () => {
                               className="py-2"
                             >
                               <div className="flex items-center gap-2">
-                                <category.icon className="w-4 h-4" />
+                                <category.icon className={`w-4 h-4 ${category.color ? category.color.replace('bg-', 'text-') : 'text-gray-500'}`} />
                                 <span className="font-medium">{category.name}</span>
                               </div>
                             </SelectItem>
                           ))}
-                        </SelectContent>
+                        </SelectContentWithScrollbar>
                       </Select>
                     </div>
                     
@@ -1015,13 +1056,37 @@ const Index = () => {
                             onChange={(e) => setNewFolderName(e.target.value)}
                             className="bg-slate-700 border-slate-600"
                           />
+                          
+                          {/* Color Picker */}
+                          <div className="space-y-2">
+                            <Label className="text-sm font-medium">Folder Color</Label>
+                            <div className="grid grid-cols-6 gap-2">
+                              {[
+                                "bg-red-500", "bg-pink-500", "bg-purple-500", "bg-blue-500", "bg-cyan-500", "bg-teal-500",
+                                "bg-green-500", "bg-lime-500", "bg-yellow-500", "bg-orange-500", "bg-gray-500", "bg-slate-500"
+                              ].map((color) => (
+                                <button
+                                  key={color}
+                                  type="button"
+                                  onClick={() => setSelectedFolderColor(color)}
+                                  className={`w-8 h-8 rounded-full border-2 transition-all ${
+                                    selectedFolderColor === color 
+                                      ? 'border-white scale-110 shadow-lg' 
+                                      : 'border-slate-600 hover:scale-105'
+                                  } ${color}`}
+                                  title={color.replace('bg-', '').replace('-500', '')}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          
                           <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="outline"
-                              onClick={() => setShowAddFolder(false)}
-                              className="border-slate-600 text-slate-300">
-                              Cancel
-                            </Button>
+                                                          <Button
+                                variant="outline"
+                                onClick={() => setShowAddFolder(false)}
+                                className="border-slate-600 text-slate-300">
+                                Cancel
+                              </Button>
                             <Button
                                                           onClick={async () => {
                               if (
@@ -1036,9 +1101,10 @@ const Index = () => {
                                   await addCustomFolder({
                                     name: newFolderName.trim(),
                                     icon: getIconForFolder(newFolderName.trim()).name,
-                                    color: "bg-gray-500",
+                                    color: selectedFolderColor,
                                   });
                                   setNewFolderName("");
+                                  setSelectedFolderColor("bg-blue-500");
                                   setShowAddFolder(false);
                                 } catch (error) {
                                   // Error is handled in the hook
@@ -1057,7 +1123,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Items Grid */}
+            {/* Items Display */}
             <div className="container mx-auto px-2 sm:px-4 py-8 w-full">
               {loading ? (
                 <div className="flex items-center justify-center py-12">
@@ -1067,7 +1133,7 @@ const Index = () => {
                   </span>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <>
                   {filtered.length === 0 ? (
                     <div className="flex flex-1 items-center justify-center min-h-[60vh] w-full">
                       <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto">
@@ -1093,127 +1159,260 @@ const Index = () => {
                       </Button>
                       </div>
                     </div>
+                  ) : viewMode === "cards" ? (
+                    // Card View
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                      {filtered.map((item, index) => (
+                        <Card
+                          key={item.id}
+                          className={
+                            (theme === 'light'
+                              ? 'bg-white/70 border border-white/60 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl text-charcoal'
+                              : 'bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass text-white')
+                            + ' rounded-xl'
+                          }
+                          style={{ animationDelay: `${index * 100}ms` }}>
+                          <CardHeader className="pb-3">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center space-x-2">
+                                {item.is_pinned && (
+                                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                )}
+                                <CardTitle className={
+                                  (theme === 'light' ? 'flex items-center gap-2 text-charcoal text-sm font-medium truncate' : 'flex items-center gap-2 text-white text-sm font-medium truncate')
+                                }>
+                                  {getIconForItem(item)}
+                                  {item.title}
+                                </CardTitle>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    togglePin(item.id, !item.is_pinned)
+                                  }
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-yellow-400">
+                                  <Star
+                                    className={`w-4 h-4 ${
+                                      item.is_pinned
+                                        ? "fill-current text-yellow-400"
+                                        : ""
+                                    }`}
+                                  />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openEditDialog(item)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-blue-400"
+                                  title="Edit">
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteItem(item.id)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-red-400">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <p className={
+                              (theme === 'light' ? 'text-slate-700 text-sm mb-3 line-clamp-2' : 'text-slate-300 text-sm mb-3 line-clamp-2')
+                            }>
+                              {item.description ||
+                                (item.type === "link"
+                                  ? "No description"
+                                  : item.content)}
+                            </p>
+
+                            {item.type === "link" && (
+                              <div className="flex items-center space-x-2 mb-3">
+                                <Globe className="w-4 h-4 text-blue-400" />
+                                <a
+                                  href={item.content}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 hover:text-blue-300 text-sm truncate flex-1">
+                                  {item.content}
+                                </a>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(item.content);
+                                    toast({
+                                      title: "Copied!",
+                                      description: "Link copied to clipboard",
+                                    });
+                                  }}
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-white">
+                                  <Copy className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-wrap gap-1">
+                                {item.tags.slice(0, 3).map((tag, tagIndex) => (
+                                  <Badge
+                                    key={tagIndex}
+                                    variant="secondary"
+                                    className="text-xs bg-slate-700 text-slate-300">
+                                    {tag}
+                                  </Badge>
+                                ))}
+                                {item.tags.length > 3 && (
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs bg-slate-700 text-slate-300">
+                                    +{item.tags.length - 3}
+                                  </Badge>
+                                )}
+                              </div>
+                              <span className="text-xs text-slate-500">
+                                {new Date(item.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   ) : (
-                    filtered.map((item, index) => (
-                      <Card
-                        key={item.id}
-                        className={
-                          (theme === 'light'
-                            ? 'bg-white/70 border border-white/60 shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl text-charcoal'
-                            : 'bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass text-white')
-                          + ' rounded-xl'
-                        }
-                        style={{ animationDelay: `${index * 100}ms` }}>
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-center space-x-2">
-                              {item.is_pinned && (
-                                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                              )}
-                              <CardTitle className={
-                                (theme === 'light' ? 'flex items-center gap-2 text-charcoal text-sm font-medium truncate' : 'flex items-center gap-2 text-white text-sm font-medium truncate')
-                              }>
-                                {getIconForItem(item)}
-                                {item.title}
-                              </CardTitle>
-                            </div>
-                            <div className="flex items-center space-x-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() =>
-                                  togglePin(item.id, !item.is_pinned)
-                                }
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-yellow-400">
-                                <Star
-                                  className={`w-4 h-4 ${
-                                    item.is_pinned
-                                      ? "fill-current text-yellow-400"
-                                      : ""
-                                  }`}
-                                />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openEditDialog(item)}
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-blue-400"
-                                title="Edit">
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteItem(item.id)}
-                                className="h-8 w-8 p-0 text-slate-400 hover:text-red-400">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <p className={
-                            (theme === 'light' ? 'text-slate-700 text-sm mb-3 line-clamp-2' : 'text-slate-300 text-sm mb-3 line-clamp-2')
-                          }>
-                            {item.description ||
-                              (item.type === "link"
-                                ? "No description"
-                                : item.content)}
-                          </p>
+                    // List View
+                    <div className="space-y-3">
+                      {filtered.map((item, index) => (
+                        <Card
+                          key={item.id}
+                          className={
+                            (theme === 'light'
+                              ? 'bg-white/70 border border-white/60 shadow-lg backdrop-blur-md transition-all duration-300 hover:shadow-xl text-charcoal'
+                              : 'bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-all duration-300 animate-slide-up glass text-white')
+                            + ' rounded-xl'
+                          }
+                          style={{ animationDelay: `${index * 50}ms` }}>
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-start space-x-4 flex-1 min-w-0">
+                                <div className="flex-shrink-0 mt-1">
+                                  {getIconForItem(item)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center space-x-2 mb-2">
+                                    {item.is_pinned && (
+                                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                    )}
+                                    <h3 className={
+                                      (theme === 'light' ? 'text-charcoal text-lg font-semibold truncate' : 'text-white text-lg font-semibold truncate')
+                                    }>
+                                      {item.title}
+                                    </h3>
+                                  </div>
+                                  
+                                  {item.description && (
+                                    <p className={
+                                      (theme === 'light' ? 'text-slate-700 text-sm mb-3' : 'text-slate-300 text-sm mb-3')
+                                    }>
+                                      {item.description}
+                                    </p>
+                                  )}
 
-                          {item.type === "link" && (
-                            <div className="flex items-center space-x-2 mb-3">
-                              <Globe className="w-4 h-4 text-blue-400" />
-                              <a
-                                href={item.content}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-400 hover:text-blue-300 text-sm truncate flex-1">
-                                {item.content}
-                              </a>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(item.content);
-                                  toast({
-                                    title: "Copied!",
-                                    description: "Link copied to clipboard",
-                                  });
-                                }}
-                                className="h-6 w-6 p-0 text-slate-400 hover:text-white">
-                                <Copy className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          )}
+                                  {item.type === "link" ? (
+                                    <div className="flex items-center space-x-2 mb-3">
+                                      <Globe className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                                      <a
+                                        href={item.content}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-400 hover:text-blue-300 text-sm truncate flex-1">
+                                        {item.content}
+                                      </a>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(item.content);
+                                          toast({
+                                            title: "Copied!",
+                                            description: "Link copied to clipboard",
+                                          });
+                                        }}
+                                        className="h-6 w-6 p-0 text-slate-400 hover:text-white flex-shrink-0">
+                                        <Copy className="w-3 h-3" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="mb-3">
+                                      <p className={
+                                        (theme === 'light' ? 'text-slate-700 text-sm' : 'text-slate-300 text-sm')
+                                      }>
+                                        {item.content}
+                                      </p>
+                                    </div>
+                                  )}
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-wrap gap-1">
-                              {item.tags.slice(0, 3).map((tag, tagIndex) => (
-                                <Badge
-                                  key={tagIndex}
-                                  variant="secondary"
-                                  className="text-xs bg-slate-700 text-slate-300">
-                                  {tag}
-                                </Badge>
-                              ))}
-                              {item.tags.length > 3 && (
-                                <Badge
-                                  variant="secondary"
-                                  className="text-xs bg-slate-700 text-slate-300">
-                                  +{item.tags.length - 3}
-                                </Badge>
-                              )}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex flex-wrap gap-1">
+                                      {item.tags.map((tag, tagIndex) => (
+                                        <Badge
+                                          key={tagIndex}
+                                          variant="secondary"
+                                          className="text-xs bg-slate-700 text-slate-300">
+                                          {tag}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                    <div className="flex items-center space-x-2 text-xs text-slate-500">
+                                      <span>{item.category}</span>
+                                      <span>•</span>
+                                      <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center space-x-1 ml-4">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    togglePin(item.id, !item.is_pinned)
+                                  }
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-yellow-400">
+                                  <Star
+                                    className={`w-4 h-4 ${
+                                      item.is_pinned
+                                        ? "fill-current text-yellow-400"
+                                        : ""
+                                    }`}
+                                  />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openEditDialog(item)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-blue-400"
+                                  title="Edit">
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => deleteItem(item.id)}
+                                  className="h-8 w-8 p-0 text-slate-400 hover:text-red-400">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <span className="text-xs text-slate-500">
-                              {new Date(item.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   )}
-                </div>
+                </>
               )}
             </div>
 
@@ -1461,8 +1660,8 @@ const Index = () => {
                 </SelectTrigger>
                 <SelectContent className={
                   theme === 'light'
-                    ? 'bg-white border border-slate-300'
-                    : 'bg-slate-700 border-slate-600'
+                    ? 'bg-white border border-slate-300 max-h-[200px] overflow-y-auto select-scrollable'
+                    : 'bg-slate-700 border-slate-600 max-h-[200px] overflow-y-auto select-scrollable'
                 }>
                   <SelectItem value="bg-blue-500" className="flex items-center gap-2">
                     <div className="w-4 h-4 rounded bg-blue-500"></div>

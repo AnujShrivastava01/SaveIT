@@ -393,3 +393,184 @@ html {
   transition: color 0.2s ease, background-color 0.2s ease,
     border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
+/* Custom scrollbar styles for select dropdowns */
+.select-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.select-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.select-scrollable::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.select-scrollable::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.select-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark theme scrollbar */
+.dark .select-scrollable {
+  scrollbar-color: #475569 #1e293b;
+}
+
+.dark .select-scrollable::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .select-scrollable::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .select-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Hide Radix UI scroll buttons */
+[data-radix-select-scroll-up-button],
+[data-radix-select-scroll-down-button] {
+  display: none !important;
+}
+
+/* Custom scrollbar styling for dropdown components */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Enhanced scrollbar for select dropdowns */
+.select-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.select-scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+
+.select-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.select-scrollable::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.select-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode for select scrollable */
+.dark .select-scrollable {
+  scrollbar-color: #475569 transparent;
+}
+
+.dark .select-scrollable::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .select-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Force scrollbar to always show for dropdowns */
+[data-radix-select-viewport] {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar-track {
+  background: #e5e7eb !important;
+  border-radius: 4px !important;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar-thumb {
+  background: #9ca3af !important;
+  border-radius: 4px !important;
+  transition: background-color 0.2s ease !important;
+}
+
+[data-radix-select-viewport]::-webkit-scrollbar-thumb:hover {
+  background: #6b7280 !important;
+}
+
+/* Prevent scroll propagation on dropdown content */
+[data-radix-select-content] {
+  overscroll-behavior: contain !important;
+}
+
+[data-radix-select-viewport] {
+  overscroll-behavior: contain !important;
+}
+
+/* Ensure dropdown scrollbar is always visible and contained */
+[data-radix-select-content] [data-radix-select-viewport] {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  overscroll-behavior: contain !important;
+}
+
+/* Dark mode for Radix select viewport */
+.dark [data-radix-select-viewport]::-webkit-scrollbar-track {
+  background: #374151 !important;
+}
+
+.dark [data-radix-select-viewport]::-webkit-scrollbar-thumb {
+  background: #6b7280 !important;
+}
+
+.dark [data-radix-select-viewport]::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af !important;
+}
+
+/* Additional styling for Firefox */
+[data-radix-select-viewport] {
+  scrollbar-color: #9ca3af #e5e7eb !important;
+}
+
+.dark [data-radix-select-viewport] {
+  scrollbar-color: #6b7280 #374151 !important;
+}
