@@ -250,10 +250,21 @@ export const getUserCustomFolders = async (clerkUserId: string) => {
 
 export const updateCustomFolder = async (
   folderId: string,
-  updates: { name?: string; icon?: string; color?: string }
+  updates: { name?: string; icon?: string; color?: string },
+  clerkUserId?: string
 ) => {
   checkSupabaseConfig();
 
+  // First, get the current folder to know the old name
+  const { data: currentFolder, error: fetchError } = await supabase!
+    .from(TABLES.CUSTOM_FOLDERS)
+    .select("name")
+    .eq("id", folderId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  // Update the folder
   const { data, error } = await supabase!
     .from(TABLES.CUSTOM_FOLDERS)
     .update({
@@ -265,6 +276,30 @@ export const updateCustomFolder = async (
     .single();
 
   if (error) throw error;
+
+  // If the folder name is being updated and we have the user ID, update all items in that folder
+  if (updates.name && currentFolder.name !== updates.name && clerkUserId) {
+    try {
+      // Get user profile
+      const userProfile = await getUserProfile(clerkUserId);
+      
+      // Update all items that have the old folder name as their category
+      const { error: updateItemsError } = await supabase!
+        .from(TABLES.SAVED_ITEMS)
+        .update({ category: updates.name })
+        .eq("user_id", userProfile.id)
+        .eq("category", currentFolder.name);
+
+      if (updateItemsError) {
+        console.error("Error updating items for renamed folder:", updateItemsError);
+        // Don't throw here as the folder was updated successfully
+      }
+    } catch (profileError) {
+      console.error("Error getting user profile for item updates:", profileError);
+      // Don't throw here as the folder was updated successfully
+    }
+  }
+
   return data;
 };
 

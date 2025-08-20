@@ -312,12 +312,20 @@ export const useDatabase = () => {
         return;
       }
 
-      const updatedFolder = await updateCustomFolder(folderId, updates);
+      const updatedFolder = await updateCustomFolder(folderId, updates, user.id);
+      
+      // Update local state for folders
       setCustomFolders((prev) =>
         prev.map((folder) =>
           folder.id === folderId ? { ...folder, ...updatedFolder } : folder
         )
       );
+
+      // If folder name was updated, reload items to get the updated categories
+      if (updates.name) {
+        await loadItems();
+      }
+
       toast({
         title: "Success",
         description: "Custom folder updated successfully!",

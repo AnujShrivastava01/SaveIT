@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Search,
   Plus,
@@ -14,6 +14,107 @@ import {
   Github,
   Twitter,
   Pencil,
+  Briefcase,
+  Home,
+  ShoppingBag,
+  Camera,
+  Music,
+  Video,
+  FileText,
+  Calendar,
+  Mail,
+  Phone,
+  MapPin,
+  Users,
+  Settings,
+  Zap,
+  Target,
+  Award,
+  Lightbulb,
+  Palette,
+  Gamepad2,
+  Utensils,
+  Car,
+  Plane,
+  Train,
+  Bus,
+  Bike,
+  Dumbbell,
+  Trophy,
+  Gift,
+  ShoppingCart,
+  CreditCard,
+  Wallet,
+  PiggyBank,
+  Building,
+  School,
+  GraduationCap,
+  Microscope,
+  Calculator,
+  Compass,
+  Globe2,
+  Map,
+  Navigation,
+  Anchor,
+  Ship,
+  Rocket,
+  Satellite,
+  Wifi,
+  Bluetooth,
+  Battery,
+  Power,
+  Lock,
+  Key,
+  Shield,
+  Eye,
+  EyeOff,
+  Bell,
+  Clock,
+  Timer,
+  Watch,
+  CalendarDays,
+  Sun,
+  Moon,
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  Wind,
+  Umbrella,
+  Snowflake,
+  Thermometer,
+  Droplets,
+  Waves,
+  Mountain,
+  Trees,
+  Leaf,
+  Flower,
+  Bug,
+  Fish,
+  Bird,
+  Cat,
+  Dog,
+  PawPrint,
+  Bone,
+  Egg,
+  Milk,
+  Apple,
+  Carrot,
+  Pizza,
+  Cake,
+  Coffee,
+  Wine,
+  Beer,
+  IceCream,
+  Cookie,
+  Candy,
+  Smartphone,
+  Database,
+  Server,
+  MessageCircle,
+  TrendingUp,
+  Wrench,
+  Archive,
+  Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +165,113 @@ function getDomain(url: string) {
   } catch {
     return null;
   }
+}
+
+// Utility function to get appropriate icon for folder based on name
+function getIconForFolder(folderName: string) {
+  const name = folderName.toLowerCase();
+  
+  // Work/Professional related
+  if (name.includes('work') || name.includes('job') || name.includes('career') || name.includes('office')) return Briefcase;
+  if (name.includes('project') || name.includes('task') || name.includes('todo')) return Target;
+  if (name.includes('meeting') || name.includes('appointment')) return Calendar;
+  if (name.includes('client') || name.includes('customer')) return Users;
+  if (name.includes('business') || name.includes('company')) return Building;
+  if (name.includes('finance') || name.includes('money') || name.includes('budget')) return Wallet;
+  if (name.includes('invoice') || name.includes('billing')) return CreditCard;
+  if (name.includes('salary') || name.includes('payroll')) return PiggyBank;
+  
+  // Education/Study related
+  if (name.includes('study') || name.includes('learn') || name.includes('education')) return BookOpen;
+  if (name.includes('school') || name.includes('college') || name.includes('university')) return School;
+  if (name.includes('course') || name.includes('class') || name.includes('lecture')) return GraduationCap;
+  if (name.includes('research') || name.includes('lab')) return Microscope;
+  if (name.includes('science') || name.includes('experiment')) return Microscope;
+  if (name.includes('math') || name.includes('calculation')) return Calculator;
+  
+  // Technology/Coding related
+  if (name.includes('coding') || name.includes('programming') || name.includes('dev')) return Code;
+  if (name.includes('tech') || name.includes('technology') || name.includes('software')) return Zap;
+  if (name.includes('web') || name.includes('website') || name.includes('site')) return Globe;
+  if (name.includes('app') || name.includes('mobile') || name.includes('ios') || name.includes('android')) return Smartphone;
+  if (name.includes('database') || name.includes('data')) return Database;
+  if (name.includes('api') || name.includes('backend')) return Server;
+  if (name.includes('frontend') || name.includes('ui') || name.includes('ux')) return Palette;
+  if (name.includes('design') || name.includes('graphic')) return Palette;
+  
+  // Personal/Lifestyle related
+  if (name.includes('personal') || name.includes('private') || name.includes('life')) return Heart;
+  if (name.includes('home') || name.includes('house') || name.includes('family')) return Home;
+  if (name.includes('health') || name.includes('fitness') || name.includes('gym')) return Dumbbell;
+  if (name.includes('sport') || name.includes('exercise') || name.includes('workout')) return Trophy;
+  if (name.includes('food') || name.includes('cooking') || name.includes('recipe')) return Utensils;
+  if (name.includes('restaurant') || name.includes('dining')) return ShoppingBag;
+  if (name.includes('travel') || name.includes('trip') || name.includes('vacation')) return Plane;
+  if (name.includes('car') || name.includes('vehicle') || name.includes('transport')) return Car;
+  if (name.includes('shopping') || name.includes('buy') || name.includes('purchase')) return ShoppingCart;
+  
+  // Entertainment/Media related
+  if (name.includes('music') || name.includes('song') || name.includes('audio')) return Music;
+  if (name.includes('video') || name.includes('movie') || name.includes('film')) return Video;
+  if (name.includes('photo') || name.includes('image') || name.includes('picture')) return Camera;
+  if (name.includes('game') || name.includes('gaming') || name.includes('play')) return Gamepad2;
+  if (name.includes('book') || name.includes('reading') || name.includes('novel')) return FileText;
+  if (name.includes('art') || name.includes('creative') || name.includes('drawing')) return Palette;
+  
+  // Communication/Social related
+  if (name.includes('social') || name.includes('network') || name.includes('connect')) return Users;
+  if (name.includes('email') || name.includes('mail') || name.includes('message')) return Mail;
+  if (name.includes('phone') || name.includes('call') || name.includes('contact')) return Phone;
+  if (name.includes('chat') || name.includes('message') || name.includes('conversation')) return MessageCircle;
+  if (name.includes('linkedin')) return Linkedin;
+  if (name.includes('github')) return Github;
+  if (name.includes('twitter') || name.includes('x')) return Twitter;
+  
+  // Finance/Investment related
+  if (name.includes('investment') || name.includes('stock') || name.includes('trading')) return TrendingUp;
+  if (name.includes('bank') || name.includes('account') || name.includes('saving')) return PiggyBank;
+  if (name.includes('expense') || name.includes('cost') || name.includes('spending')) return CreditCard;
+  
+  // Travel/Transportation related
+  if (name.includes('train') || name.includes('railway')) return Train;
+  if (name.includes('bus') || name.includes('public')) return Bus;
+  if (name.includes('bike') || name.includes('cycling')) return Bike;
+  if (name.includes('ship') || name.includes('boat') || name.includes('cruise')) return Ship;
+  if (name.includes('hotel') || name.includes('accommodation')) return Building;
+  if (name.includes('map') || name.includes('location') || name.includes('place')) return MapPin;
+  
+  // Nature/Outdoor related
+  if (name.includes('nature') || name.includes('outdoor') || name.includes('park')) return Trees;
+  if (name.includes('garden') || name.includes('plant') || name.includes('flower')) return Flower;
+  if (name.includes('mountain') || name.includes('hiking') || name.includes('climb')) return Mountain;
+  if (name.includes('beach') || name.includes('ocean') || name.includes('sea')) return Waves;
+  if (name.includes('weather') || name.includes('climate')) return Cloud;
+  
+  // Time/Calendar related
+  if (name.includes('schedule') || name.includes('time') || name.includes('clock')) return Clock;
+  if (name.includes('reminder') || name.includes('alarm') || name.includes('notification')) return Bell;
+  if (name.includes('event') || name.includes('party') || name.includes('celebration')) return Gift;
+  
+  // Security/Privacy related
+  if (name.includes('security') || name.includes('password') || name.includes('lock')) return Lock;
+  if (name.includes('privacy') || name.includes('private') || name.includes('secret')) return Shield;
+  
+  // Settings/Configuration related
+  if (name.includes('setting') || name.includes('config') || name.includes('preference')) return Settings;
+  if (name.includes('tool') || name.includes('utility') || name.includes('helper')) return Wrench;
+  
+  // Default fallback icons based on common patterns
+  if (name.includes('idea') || name.includes('inspiration') || name.includes('creative')) return Lightbulb;
+  if (name.includes('goal') || name.includes('target') || name.includes('objective')) return Target;
+  if (name.includes('achievement') || name.includes('success') || name.includes('win')) return Award;
+  if (name.includes('favorite') || name.includes('like') || name.includes('love')) return Heart;
+  if (name.includes('important') || name.includes('priority') || name.includes('urgent')) return Star;
+  if (name.includes('new') || name.includes('recent') || name.includes('latest')) return Zap;
+  if (name.includes('old') || name.includes('archive') || name.includes('history')) return Archive;
+  if (name.includes('backup') || name.includes('save') || name.includes('store')) return Save;
+  
+  // If no specific match, return a default icon
+  return Folder;
 }
 
 // Utility function to get icon for item
@@ -125,6 +333,7 @@ const Index = () => {
     updateItem,
     addCustomFolder,
     deleteCustomFolder,
+    updateCustomFolder,
   } = useDatabase();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -139,16 +348,16 @@ const Index = () => {
     custom_image: "",
   });
   // Combine default categories with custom folders
-  const allCategories = [
+  const allCategories = useMemo(() => [
     ...defaultCategories.map(cat => ({ ...cat, isCustom: false, id: undefined })),
     ...customFolders.map(folder => ({
       name: folder.name,
-      icon: Folder, // Default to Folder icon for custom folders
+      icon: getIconForFolder(folder.name), // Use intelligent icon assignment
       color: folder.color,
       isCustom: true,
       id: folder.id
     }))
-  ];
+  ], [customFolders]);
   const [showAddFolder, setShowAddFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const { toast } = useToast();
@@ -163,6 +372,12 @@ const Index = () => {
     category: "Coding",
     type: "link" as "link" | "text",
     custom_image: "",
+  });
+  const [editFolderDialogOpen, setEditFolderDialogOpen] = useState(false);
+  const [editingFolder, setEditingFolder] = useState<CustomFolder | null>(null);
+  const [editFolderForm, setEditFolderForm] = useState({
+    name: "",
+    color: "bg-gray-500",
   });
   const { theme } = useTheme();
 
@@ -259,6 +474,49 @@ const Index = () => {
     }
   };
 
+  // Handle edit folder open
+  const openEditFolderDialog = (folder: CustomFolder) => {
+    setEditingFolder(folder);
+    setEditFolderForm({
+      name: folder.name,
+      color: folder.color,
+    });
+    setEditFolderDialogOpen(true);
+  };
+
+  // Handle edit folder save
+  const handleEditFolderSave = async () => {
+    if (!editingFolder) return;
+    
+    // Store the current selected category and whether it was the folder being edited
+    const wasEditingSelectedFolder = selectedCategory === editingFolder.name;
+    const newFolderName = editFolderForm.name;
+    
+    try {
+      await updateCustomFolder(editingFolder.id, {
+        name: editFolderForm.name,
+        color: editFolderForm.color,
+      });
+      setEditFolderDialogOpen(false);
+      setEditingFolder(null);
+      toast({ title: "Success", description: "Folder updated successfully!" });
+      
+      // Reload items to reflect the updated folder names
+      await loadItems();
+      
+      // If we were editing the currently selected folder, update the selection to the new name
+      if (wasEditingSelectedFolder) {
+        setSelectedCategory(newFolderName);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update folder",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Define filtered before the JSX return
   const filtered = items.filter((item) => {
     let match = true;
@@ -283,6 +541,17 @@ const Index = () => {
     }
     return match;
   });
+
+  // Ensure selectedCategory is valid when allCategories changes
+  useEffect(() => {
+    if (selectedCategory !== "all") {
+      const categoryExists = allCategories.some(cat => cat.name === selectedCategory);
+      if (!categoryExists) {
+        // If the selected category no longer exists, reset to "all"
+        setSelectedCategory("all");
+      }
+    }
+  }, [allCategories, selectedCategory]);
 
   // GSAP demo: pulse heading color on hover
   const headingRef = React.useRef<HTMLHeadingElement>(null);
@@ -558,7 +827,7 @@ const Index = () => {
 
                 {/* Search and Category Filter */}
                 <div className="flex flex-col md:flex-row gap-4 animate-slide-up">
-                  <div className="flex-1 relative min-w-0">
+                  <div className="relative w-64">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <Input
                       placeholder="Search your saved items..."
@@ -566,101 +835,114 @@ const Index = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className={
                         (theme === 'light'
-                          ? 'pl-10 bg-white/90 border border-slate-300 text-charcoal placeholder-slate-400 w-full min-w-0 shadow-sm'
-                          : 'pl-10 bg-slate-700/50 border-slate-600 text-white placeholder-slate-400 w-full min-w-0')
+                          ? 'pl-10 bg-white/90 border border-slate-300 text-charcoal placeholder-slate-400 shadow-sm'
+                          : 'pl-10 bg-slate-700/50 border-slate-600 text-white')
                       }
                     />
                   </div>
                   <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
-                    <Button
-                      variant={
-                        selectedCategory === "all" ? "default" : "outline"
-                      }
-                      onClick={() => setSelectedCategory("all")}
-                      className={
-                        selectedCategory === "all"
-                          ? (theme === 'light'
-                              ? 'bg-purple-600 hover:bg-purple-700 text-white shadow-md'
-                              : 'bg-purple-600 hover:bg-purple-700 shadow-md')
-                          : (theme === 'light'
-                              ? 'border-slate-300 text-charcoal bg-white/90 shadow-md'
-                              : 'border-slate-600 text-slate-300 shadow-md')
-                      }>
-                      <span className={selectedCategory === "all" && theme === 'light' ? 'text-white' : theme === 'light' ? 'text-charcoal' : 'text-slate-300'}>
-                        All
-                      </span>
-                    </Button>
-                                            {allCategories.map((category, idx) => (
-                      <div
-                        key={category.name}
-                        className="relative group inline-block">
+                    {/* Folder Filter Dropdown */}
+                    <div className="relative">
+                      <Select
+                        value={selectedCategory}
+                        onValueChange={(value) => {
+                          setSelectedCategory(value);
+                          setNewItem((prev) => ({
+                            ...prev,
+                            category: value === "all" ? "Coding" : value,
+                          }));
+                        }}>
+                        <SelectTrigger className={
+                          theme === 'light'
+                            ? 'bg-white/90 border border-slate-300 text-charcoal shadow-md min-w-[200px]'
+                            : 'bg-slate-700/50 border-slate-600 text-white shadow-md min-w-[200px]'
+                        }>
+                          <SelectValue placeholder="Select folder...">
+                            {selectedCategory === "all" ? (
+                              <div className="flex items-center gap-2">
+                                <Folder className="w-4 h-4 text-purple-500" />
+                                <span className="font-medium">All Folders</span>
+                              </div>
+                            ) : (
+                              (() => {
+                                const category = allCategories.find(cat => cat.name === selectedCategory);
+                                return category ? (
+                                  <div className="flex items-center gap-2">
+                                    <category.icon className="w-4 h-4" />
+                                    <span className="font-medium">{category.name}</span>
+                                  </div>
+                                ) : (
+                                  <span>Select folder...</span>
+                                );
+                              })()
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent className={
+                          theme === 'light'
+                            ? 'bg-white border border-slate-300'
+                            : 'bg-slate-800 border-slate-600'
+                        }>
+                          <SelectItem value="all" className="py-2">
+                            <div className="flex items-center gap-2">
+                              <Folder className="w-4 h-4 text-purple-500" />
+                              <span className="font-medium">All Folders</span>
+                            </div>
+                          </SelectItem>
+                          {allCategories.map((category) => (
+                            <SelectItem 
+                              key={category.name} 
+                              value={category.name}
+                              className="py-2"
+                            >
+                              <div className="flex items-center gap-2">
+                                <category.icon className="w-4 h-4" />
+                                <span className="font-medium">{category.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Edit/Delete buttons for selected custom folder */}
+                    {selectedCategory !== "all" && allCategories.find(cat => cat.name === selectedCategory)?.isCustom && (
+                      <div className="flex items-center gap-1">
                         <Button
-                          variant={
-                            selectedCategory === category.name
-                              ? "default"
-                              : "outline"
-                          }
+                          variant="outline"
+                          size="sm"
                           onClick={() => {
-                            setSelectedCategory(category.name);
-                            setNewItem((prev) => ({
-                              ...prev,
-                              category: category.name,
-                            }));
+                            const customFolder = customFolders.find(f => f.name === selectedCategory);
+                            if (customFolder) {
+                              openEditFolderDialog(customFolder);
+                            }
                           }}
                           className={
-                            selectedCategory === category.name
-                              ? (theme === 'light'
-                                  ? 'bg-purple-600 hover:bg-purple-700 text-white pr-8 shadow-md'
-                                  : category.name === 'Coding'
-                                    ? 'bg-blue-500 hover:bg-blue-600 text-white pr-8 shadow-md'
-                                  : category.name === 'Study'
-                                    ? 'bg-green-500 hover:bg-green-600 text-white pr-8 shadow-md'
-                                  : category.name === 'Personal'
-                                    ? 'bg-pink-500 hover:bg-pink-600 text-white pr-8 shadow-md'
-                                  : category.name === 'Work'
-                                    ? 'bg-orange-400 hover:bg-orange-500 text-white pr-8 shadow-md'
-                                  : 'bg-purple-600 hover:bg-purple-700 text-white pr-8 shadow-md')
-                              : (theme === 'light'
-                                  ? 'border-slate-300 text-charcoal bg-white/90 pr-8 shadow-md'
-                                  : category.name === 'Coding'
-                                    ? 'bg-slate-800 border-blue-400 text-blue-300 pr-8 shadow-md'
-                                    : category.name === 'Study'
-                                      ? 'bg-slate-800 border-green-400 text-green-300 pr-8 shadow-md'
-                                      : category.name === 'Personal'
-                                        ? 'bg-slate-800 border-pink-400 text-pink-300 pr-8 shadow-md'
-                                        : category.name === 'Work'
-                                          ? 'bg-slate-800 border-orange-300 text-orange-200 pr-8 shadow-md'
-                                          : 'bg-slate-800 border-purple-400 text-purple-300 pr-8 shadow-md')
-                          }>
-                          <category.icon className={
-                            selectedCategory === category.name
-                              ? 'w-3 h-3 mr-1 text-white'
-                              : theme === 'light'
-                                ? 'w-3 h-3 mr-1 text-charcoal'
-                                : category.name === 'Coding'
-                                  ? 'w-3 h-3 mr-1 text-blue-300'
-                                  : category.name === 'Study'
-                                    ? 'w-3 h-3 mr-1 text-green-300'
-                                    : category.name === 'Personal'
-                                      ? 'w-3 h-3 mr-1 text-pink-300'
-                                      : category.name === 'Work'
-                                        ? 'w-3 h-3 mr-1 text-orange-200'
-                                        : 'w-3 h-3 mr-1 text-purple-300'
-                          } />
-                          {category.name}
+                            theme === 'light'
+                              ? 'border-slate-300 text-charcoal bg-white/90 shadow-md'
+                              : 'border-slate-600 text-slate-300 shadow-md'
+                          }
+                          title="Edit folder"
+                        >
+                          <Pencil className="w-4 h-4" />
                         </Button>
-                        {/* Show delete for every folder except 'All' */}
-                        <button
-                          className="absolute top-1/2 right-2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500"
-                          title={`Delete ${category.name}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setConfirmDeleteIdx(idx);
-                          }}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setConfirmDeleteIdx(allCategories.findIndex(c => c.name === selectedCategory));
+                          }}
+                          className={
+                            theme === 'light'
+                              ? 'border-slate-300 text-red-500 bg-white/90 shadow-md hover:bg-red-50'
+                              : 'border-slate-600 text-red-400 shadow-md hover:bg-red-900/20'
+                          }
+                          title="Delete folder"
+                        >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
-                    ))}
+                    )}
                     {/* Confirm Delete Dialog */}
                     <Dialog
                       open={confirmDeleteIdx !== null}
@@ -753,7 +1035,7 @@ const Index = () => {
                                 try {
                                   await addCustomFolder({
                                     name: newFolderName.trim(),
-                                    icon: "Folder",
+                                    icon: getIconForFolder(newFolderName.trim()).name,
                                     color: "bg-gray-500",
                                   });
                                   setNewFolderName("");
@@ -1117,6 +1399,119 @@ const Index = () => {
               </Button>
               <Button
                 onClick={handleEditSave}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Folder Dialog */}
+      <Dialog open={editFolderDialogOpen} onOpenChange={setEditFolderDialogOpen}>
+        <DialogContent className={
+          theme === 'light'
+            ? 'bg-white border border-slate-300 text-charcoal'
+            : 'bg-slate-800 border-slate-700 text-white'
+        }>
+          <DialogHeader>
+            <DialogTitle>Edit Folder: {editingFolder?.name}</DialogTitle>
+            <DialogDescription>
+              Update the folder name and color. Press Enter to save or Escape to cancel.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-folder-name">Folder Name</Label>
+              <Input
+                id="edit-folder-name"
+                value={editFolderForm.name}
+                onChange={(e) =>
+                  setEditFolderForm({ ...editFolderForm, name: e.target.value })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleEditFolderSave();
+                  } else if (e.key === 'Escape') {
+                    setEditFolderDialogOpen(false);
+                  }
+                }}
+                placeholder="Enter folder name..."
+                className={
+                  theme === 'light'
+                    ? 'bg-white border border-slate-300 text-charcoal'
+                    : 'bg-slate-700 border-slate-600'
+                }
+                autoFocus
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-folder-color">Folder Color</Label>
+              <Select
+                value={editFolderForm.color}
+                onValueChange={(value) =>
+                  setEditFolderForm({ ...editFolderForm, color: value })
+                }>
+                <SelectTrigger className={
+                  theme === 'light'
+                    ? 'bg-white border border-slate-300 text-charcoal'
+                    : 'bg-slate-700 border-slate-600'
+                }>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className={
+                  theme === 'light'
+                    ? 'bg-white border border-slate-300'
+                    : 'bg-slate-700 border-slate-600'
+                }>
+                  <SelectItem value="bg-blue-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-blue-500"></div>
+                    <span>Blue</span>
+                  </SelectItem>
+                  <SelectItem value="bg-green-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-green-500"></div>
+                    <span>Green</span>
+                  </SelectItem>
+                  <SelectItem value="bg-pink-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-pink-500"></div>
+                    <span>Pink</span>
+                  </SelectItem>
+                  <SelectItem value="bg-orange-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-orange-500"></div>
+                    <span>Orange</span>
+                  </SelectItem>
+                  <SelectItem value="bg-purple-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-purple-500"></div>
+                    <span>Purple</span>
+                  </SelectItem>
+                  <SelectItem value="bg-red-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-red-500"></div>
+                    <span>Red</span>
+                  </SelectItem>
+                  <SelectItem value="bg-yellow-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-yellow-500"></div>
+                    <span>Yellow</span>
+                  </SelectItem>
+                  <SelectItem value="bg-gray-500" className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded bg-gray-500"></div>
+                    <span>Gray</span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => setEditFolderDialogOpen(false)}
+                className={
+                  theme === 'light'
+                    ? 'border-slate-300 text-charcoal bg-white'
+                    : 'border-slate-600 text-slate-300'
+                }>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEditFolderSave}
                 className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600">
                 Save Changes
               </Button>
