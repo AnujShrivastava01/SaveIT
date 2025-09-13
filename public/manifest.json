@@ -25,6 +25,12 @@
   "categories": ["productivity", "utilities", "tools"],
   "screenshots": [
     {
+      "src": "/desktoppreview.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
       "src": "/saveitmobilepreview.png",
       "sizes": "750x1334",
       "type": "image/png",
