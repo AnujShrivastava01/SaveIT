@@ -34,7 +34,7 @@ SaveIT is a modern, intuitive web application designed to help you save, organiz
 
 ### 🎬 Demo
 
-🌐 **Live Demo**: [SaveIT App](https://save-it-pink.vercel.app/)
+🌐 **Live Demo**: [SaveIT App](https://save-it-direct.vercel.app/)
 
 _Experience the full functionality with the live demo!_
 
