@@ -37,7 +37,7 @@ import { useDatabase } from "@/hooks/useDatabase";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SignInPage from "@/components/SignInPage";
-import { SavedItem, CustomFolder } from "@/utils/supabase";
+import { SavedItem, CustomFolder } from "@/utils/firebase";
 
 const defaultCategories = [
   { name: "Coding", icon: Code, color: "bg-blue-500" },

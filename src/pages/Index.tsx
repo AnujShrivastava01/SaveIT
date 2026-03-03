@@ -147,7 +147,7 @@ import Navbar from '@/components/Navbar';
 import Footer from "@/components/Footer";
 import SignInPage from "@/components/SignInPage";
 import Preloader from "@/components/Preloader";
-import { SavedItem, CustomFolder } from "@/utils/supabase";
+import { SavedItem, CustomFolder } from "@/utils/firebase";
 import { useTheme } from "../contexts/ThemeContext";
 import { motion } from 'framer-motion';
 import gsap from 'gsap';

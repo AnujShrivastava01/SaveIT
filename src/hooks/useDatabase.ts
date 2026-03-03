@@ -10,12 +10,17 @@ import {
   getItemsByCategory,
   createUserProfile,
   getUserProfile,
+  getUserProfileByEmail,
+  updateUserProfileClerkId,
+  updateUserProfileAvatar,
   createCustomFolder,
   getUserCustomFolders,
   updateCustomFolder,
   deleteCustomFolder,
+  SavedItem,
+  CustomFolder,
 } from "../services/database";
-import { SavedItem, CustomFolder, supabase } from "../utils/supabase";
+import { db, isFirebaseConfigured } from "../utils/firebase";
 import { useToast } from "./use-toast";
 import { mockDatabase } from "../services/mockDatabase";
 
@@ -39,19 +44,35 @@ export const useDatabase = () => {
   const initializeUser = async () => {
     if (!user) return;
 
+    const userEmail = user.emailAddresses[0]?.emailAddress || "";
+
     try {
-      // Try to get existing profile
-      await getUserProfile(user.id);
+      // Try to get existing profile by clerk_user_id
+      const profile = await getUserProfile(user.id);
+      
+      // Update avatar_url if it's missing or changed
+      if (user.imageUrl && profile.avatar_url !== user.imageUrl) {
+        await updateUserProfileAvatar(user.id, user.imageUrl);
+      }
     } catch (error) {
-      // If profile doesn't exist, create it
+      // Profile not found by clerk_user_id, check by email
       try {
-        await createUserProfile(
-          user.id,
-          user.emailAddresses[0]?.emailAddress || "",
-          user.fullName || user.firstName || ""
-        );
+        const existingProfile = await getUserProfileByEmail(userEmail);
+        
+        if (existingProfile && existingProfile.id) {
+          // Found existing profile by email - update clerk_user_id to link it
+          await updateUserProfileClerkId(existingProfile.id, user.id, user.imageUrl || undefined);
+        } else {
+          // No existing profile found, create new one
+          await createUserProfile(
+            user.id,
+            userEmail,
+            user.fullName || user.firstName || "",
+            user.imageUrl || ""
+          );
+        }
       } catch (createError) {
-        console.error("Error creating user profile");
+        console.error("Error creating/linking user profile");
       }
     }
   };
@@ -61,14 +82,14 @@ export const useDatabase = () => {
 
     setLoading(true);
     try {
-      // Use mock data if Supabase is not configured
-      if (!supabase) {
+      // Use mock data if Firebase is not configured
+      if (!db || !isFirebaseConfigured) {
         const data = await mockDatabase.getUserSavedItems();
         setItems(data);
         setError(null);
         toast({
           title: "Demo Mode",
-          description: "Using demo data. Set up Supabase to save real data.",
+          description: "Using demo data. Set up Firebase to save real data.",
         });
       } else {
         const data = await getUserSavedItems(user.id);
@@ -87,7 +108,7 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      if (!supabase) {
+      if (!db || !isFirebaseConfigured) {
         // In demo mode, return empty array for custom folders
         setCustomFolders([]);
       } else {
@@ -106,8 +127,8 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      // Use mock data if Supabase is not configured
-      if (!supabase) {
+      // Use mock data if Firebase is not configured
+      if (!db || !isFirebaseConfigured) {
         const newItem = await mockDatabase.createSavedItem({
           ...item,
           user_id: user.id,
@@ -139,8 +160,8 @@ export const useDatabase = () => {
 
   const updateItem = async (itemId: string, updates: Partial<SavedItem>) => {
     try {
-      // Use mock data if Supabase is not configured
-      if (!supabase) {
+      // Use mock data if Firebase is not configured
+      if (!db || !isFirebaseConfigured) {
         const updatedItem = await mockDatabase.updateSavedItem(itemId, updates);
         setItems((prev) =>
           prev.map((item) =>
@@ -177,8 +198,8 @@ export const useDatabase = () => {
 
   const deleteItem = async (itemId: string) => {
     try {
-      // Use mock data if Supabase is not configured
-      if (!supabase) {
+      // Use mock data if Firebase is not configured
+      if (!db || !isFirebaseConfigured) {
         await mockDatabase.deleteSavedItem(itemId);
         setItems((prev) => prev.filter((item) => item.id !== itemId));
         toast({
@@ -206,8 +227,8 @@ export const useDatabase = () => {
 
   const togglePin = async (itemId: string, isPinned: boolean) => {
     try {
-      // Use mock data if Supabase is not configured
-      if (!supabase) {
+      // Use mock data if Firebase is not configured
+      if (!db || !isFirebaseConfigured) {
         await mockDatabase.updateSavedItem(itemId, { is_pinned: isPinned });
         setItems((prev) =>
           prev.map((item) =>
@@ -272,7 +293,7 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      if (!supabase) {
+      if (!db || !isFirebaseConfigured) {
         toast({
           title: "Demo Mode",
           description: "Custom folders not available in demo mode",
@@ -303,7 +324,7 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      if (!supabase) {
+      if (!db || !isFirebaseConfigured) {
         toast({
           title: "Demo Mode",
           description: "Custom folders not available in demo mode",
@@ -346,7 +367,7 @@ export const useDatabase = () => {
     if (!user) return;
 
     try {
-      if (!supabase) {
+      if (!db || !isFirebaseConfigured) {
         toast({
           title: "Demo Mode",
           description: "Custom folders not available in demo mode",

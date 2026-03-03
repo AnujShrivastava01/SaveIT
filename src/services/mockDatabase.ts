@@ -1,6 +1,6 @@
-import { SavedItem } from "../utils/supabase";
+import { SavedItem } from "../utils/firebase";
 
-// Mock data for when Supabase is not configured
+// Mock data for when Firebase is not configured
 const mockItems: SavedItem[] = [
   {
     id: "1",
