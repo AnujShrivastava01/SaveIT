@@ -1,6 +1,6 @@
 <div align="center">
  
-# 📚 SaveIT - Your Personal Knowledge Hub !!
+# 📚 SaveIT - Your Personal Knowledge Hub !
 
 <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/bookmark.svg" width="100" height="100" alt="SaveIT Logo">
 
